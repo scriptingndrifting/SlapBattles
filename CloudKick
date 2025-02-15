@@ -12,6 +12,7 @@ local arenaPart = game:GetService("Workspace").Lobby.Teleport1
 brazilPart.CanTouch = false
 
 local connection
+local camCon
 local con
 local connections = {}
 
@@ -50,6 +51,22 @@ local function getClosestPlayer()
     return closestPlayer
 end
 
+local function tpArena()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+    humanoidRootPart.CFrame = arenaPart.CFrame
+    task.wait()
+    resetConnection()
+    connection = game:GetService("RunService").Heartbeat:Connect(function()
+        humanoidRootPart.CFrame = CFrame.new(TPArenaPos, TPArenaPos + humanoidRootPart.CFrame.LookVector)
+        humanoidRootPart.AssemblyLinearVelocity = Vector3.zero
+    end)
+    task.wait(0.5)
+    resetConnection()
+end
+
 local function setupCloud()
     local cloud = workspace:FindFirstChild(game.Players.LocalPlayer.Name .. "_Cloud")
     if not cloud then return end
@@ -79,7 +96,6 @@ local function attack(root)
     if not seat then return end
     
     local originalCFrame = seat.CFrame
-    camera.CameraSubject = closestPlayerRoot
     
     local pos = closestPlayerRoot.Position + Vector3.new(0, -1, 0) + closestPlayerRoot.AssemblyLinearVelocity * 0.3
     local targetPos = closestPlayerRoot.Position
@@ -101,9 +117,8 @@ local function attack(root)
     task.wait(0.2)
     humanoidRootPart.CFrame = originalCFrame
     task.wait(0.5)
-    camera.CameraSubject = character:WaitForChild("Head")
 
-    if tick() - lastAbility < 4 then humanoid.Health = 0 end
+    if tick() - lastAbility < 4 then humanoid.Health = 0 else tpArena() end
 end
 
 local function spawnCloud()
@@ -146,21 +161,7 @@ tpArenaButton.Position = UDim2.new(1, -200, 0, 0)
 tpArenaButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
 tpArenaButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 tpArenaButton.Text = "TP Arena"
-con = tpArenaButton.Activated:Connect(function()
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:WaitForChild("Humanoid")
-    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-
-    humanoidRootPart.CFrame = arenaPart.CFrame
-    task.wait()
-    resetConnection()
-    connection = game:GetService("RunService").Heartbeat:Connect(function()
-        humanoidRootPart.CFrame = CFrame.new(TPArenaPos, TPArenaPos + humanoidRootPart.CFrame.LookVector)
-        humanoidRootPart.AssemblyLinearVelocity = Vector3.zero
-    end)
-    task.wait(0.5)
-    resetConnection()
-end)
+con = tpArenaButton.Activated:Connect(tpArena)
 table.insert(connections, con)
 
 local frame = Instance.new("ScrollingFrame")
@@ -197,11 +198,11 @@ local function createPlayerButton(playerName)
             if not targetPlayer then return end
             local targetPlayerRoot = targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart")
             if targetPlayerRoot then
-                local camCon
+                if camCon then camCon:Disconnect(); camCon = nil end
                 camCon = game:GetService("RunService").RenderStepped:Connect(function()
                     workspace.CurrentCamera.CameraSubject = targetPlayer.Character:FindFirstChild("Head") or targetPlayerRoot
                 end)
-                task.delay(1, function()
+                task.delay(1.5, function()
                     camCon:Disconnect()
                     workspace.CurrentCamera.CameraSubject = localplayer.Character:FindFirstChild("Head")
                 end)
