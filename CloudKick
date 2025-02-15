@@ -139,7 +139,7 @@ local function spawnCloud()
     game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, nil)
     lastAbility = tick()
 
-    task.wait(0.3)
+    task.wait(0.2)
 
     resetConnection()
 
@@ -148,7 +148,7 @@ local function spawnCloud()
         humanoidRootPart.CFrame = CFrame.new(spawnCloudPosition + Vector3.new(0, 20, -10))
     end)
 
-    task.wait(0.4)
+    task.wait(1.5)
 
     resetConnection()
 end
