@@ -1,0 +1,228 @@
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+
+local brazilPart = game:GetService("Workspace").Lobby.brazil.portal
+brazilPart.CanTouch = false
+
+local connection
+local con
+local connections = {}
+
+local active = true
+
+local lastAbility = 0
+
+if not brazilPart then
+    return
+end
+
+local function getClosestPlayer()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+    local closestPlayer = nil
+    local shortestDistance = math.huge
+    
+    for _, otherPlayer in pairs(Players:GetPlayers()) do
+        if otherPlayer ~= player and otherPlayer.Character then
+            local otherRoot = otherPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if otherRoot then
+                local distance = (humanoidRootPart.Position - otherRoot.Position).Magnitude
+                if distance < shortestDistance then
+                    shortestDistance = distance
+                    closestPlayer = otherRoot
+                end
+            end
+        end
+    end
+    return closestPlayer
+end
+
+local function setupCloud()
+    local cloud = workspace:FindFirstChild(game.Players.LocalPlayer.Name .. "_Cloud")
+    if not cloud then return end
+
+    local script = cloud:FindFirstChild("VehicleSeat"):FindFirstChild("cloud")
+    local script2 = cloud:FindFirstChild("VehicleSeat"):FindFirstChild("Script")
+
+    if script then script:Destroy() end
+    if script2 then script2:Destroy() end
+end
+
+local function attack(root)
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    local camera = workspace.CurrentCamera
+    
+    local closestPlayerRoot = root
+    if not closestPlayerRoot then return end
+
+    -- Cloud Stuff
+
+    setupCloud()
+    local cloud = game:GetService("Workspace"):FindFirstChild(player.Name .. "_Cloud")
+    if not cloud then return end
+    local seat = cloud:FindFirstChild("VehicleSeat")
+    if not seat then return end
+    
+    local originalCFrame = seat.CFrame
+    camera.CameraSubject = closestPlayerRoot
+    
+    local pos = closestPlayerRoot.Position + Vector3.new(0, -1, 0) + closestPlayerRoot.AssemblyLinearVelocity * 0.3
+    local targetPos = closestPlayerRoot.Position
+    local direction = CFrame.new(pos, targetPos).LookVector
+    local newCF = CFrame.new(pos + direction * 3, targetPos) * CFrame.Angles(0, math.rad(90), 0)
+
+    seat.CFrame = newCF
+
+    task.wait(0.3)
+
+    seat.CFrame = CFrame.new(brazilPart.CFrame.Position + Vector3.new(0, 3, 0), brazilPart.CFrame.Position + Vector3.new(0, 1000, 0))
+
+    task.wait(0.4)
+    humanoid:ChangeState(Enum.HumanoidStateType.Running)
+    task.wait()
+    humanoidRootPart.CFrame = originalCFrame
+    humanoidRootPart.AssemblyLinearVelocity = Vector3.zero
+    humanoidRootPart.AssemblyAngularVelocity = Vector3.zero
+    task.wait(0.2)
+    humanoidRootPart.CFrame = originalCFrame
+    task.wait(0.5)
+    camera.CameraSubject = character:WaitForChild("Head")
+
+    if tick() - lastAbility < 4 then humanoid.Health = 0 end
+end
+
+local function spawnCloud()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    local camera = workspace.CurrentCamera
+
+    local spawnCloudPosition = Vector3.new(500, 150, 500)
+
+    if connection then connection:Disconnect() end
+
+    connection = game:GetService("RunService").Heartbeat:Connect(function()
+        humanoidRootPart.CFrame = CFrame.new(spawnCloudPosition)
+        humanoidRootPart.AssemblyLinearVelocity = Vector3.zero
+    end)
+    
+    task.wait(0.2)
+
+    -- Simulate pressing "E"
+    game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, nil)
+    lastAbility = tick()
+
+    task.wait(1)
+
+    connection:Disconnect()
+
+    humanoidRootPart.AssemblyLinearVelocity = Vector3.zero
+    humanoidRootPart.CFrame = CFrame.new(spawnCloudPosition + Vector3.new(0, 20, -10))
+end
+
+-- Player Selector Script
+
+local localplayer = Players.LocalPlayer
+local screenGui = Instance.new("ScreenGui")
+screenGui.ResetOnSpawn = false
+screenGui.Parent = game:GetService("CoreGui")
+local frame = Instance.new("ScrollingFrame")
+frame.Size = UDim2.new(0, 200, 0.7, 0)
+frame.AnchorPoint = Vector2.new(1, 0)
+frame.Position = UDim2.new(1, 0, 0, 0)
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.Parent = screenGui
+local listUI = Instance.new("UIListLayout", frame)
+local playerButtons = {}
+local function createPlayerButton(playerName)
+    local button = Instance.new("TextButton", frame)
+    button.Size = UDim2.new(1, 0, 0, 25)
+    button.Text = playerName
+    button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    
+    local lastClick = 0  -- Stores the timestamp of the last click
+
+    button.MouseButton1Click:Connect(function()
+        local currentTime = tick()  -- Get current time in seconds
+        if currentTime - lastClick < 0.3 then
+            -- Double click detected (Attack)
+            local targetPlayer = game:GetService("Players"):FindFirstChild(playerName)
+            if not targetPlayer then return end
+            local targetPlayerRoot = targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if targetPlayerRoot then
+                attack(targetPlayerRoot)
+            end
+        else
+            -- Single click detected (View Player)
+            setupCloud()
+            local targetPlayer = game:GetService("Players"):FindFirstChild(playerName)
+            if not targetPlayer then return end
+            local targetPlayerRoot = targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if targetPlayerRoot then
+                local camCon
+                camCon = game:GetService("RunService").RenderStepped:Connect(function()
+                    workspace.CurrentCamera.CameraSubject = targetPlayer.Character:FindFirstChild("Head") or targetPlayerRoot
+                end)
+                task.delay(1, function()
+                    camCon:Disconnect()
+                    workspace.CurrentCamera.CameraSubject = localplayer.Character:FindFirstChild("Head")
+                end)
+            end
+        end
+        lastClick = currentTime  -- Update last click time
+    end)
+
+    playerButtons[playerName] = button
+end
+local function removePlayerButton(playerName)
+    local button = playerButtons[playerName]
+    if button then
+        button:Destroy()
+        playerButtons[playerName] = nil
+    end
+end
+con = game.Players.PlayerAdded:Connect(function(p)
+    if p ~= localplayer then
+        createPlayerButton(p.Name)
+    end
+end)
+table.insert(connections, con)
+con = game.Players.PlayerRemoving:Connect(function(p)
+    if p ~= localplayer then
+        removePlayerButton(p.Name)
+    end
+end)
+table.insert(connections, con)
+for _, player in pairs(game.Players:GetPlayers()) do
+    if player ~= localplayer then
+        createPlayerButton(player.Name)
+    end
+end
+local function onExit()
+    active = false
+    if connection then connection:Disconnect() end
+    for i, v in ipairs(connections) do
+        v:Disconnect()
+    end
+    screenGui:Destroy()
+end
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not active then return end
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.H then
+        active = false
+        onExit()
+        return
+    end
+
+    if input.KeyCode == Enum.KeyCode.G then
+        spawnCloud()
+    end
+end)
