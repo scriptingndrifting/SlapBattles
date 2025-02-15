@@ -119,7 +119,8 @@ local function attack(root)
     humanoidRootPart.CFrame = originalCFrame
     task.wait(0.5)
 
-    if tick() - lastAbility < 4 then humanoid.Health = 0 else tpArena() end
+    if tick() - lastAbility < 8 then humanoid.Health = 0; task.wait(3) end
+    tpArena()
 end
 
 local function spawnCloud()
