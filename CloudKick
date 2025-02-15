@@ -62,6 +62,9 @@ local function tpArena()
     resetConnection()
     connection = game:GetService("RunService").Heartbeat:Connect(function()
         humanoidRootPart.CFrame = CFrame.new(TPArenaPos, TPArenaPos + humanoidRootPart.CFrame.LookVector)
+        for _, v in pairs(character:GetChildren()) do
+            if v:IsA("BasePart") then v.CFrame = humanoidRootPart.CFrame
+        end
         humanoidRootPart.AssemblyLinearVelocity = Vector3.zero
     end)
     task.wait(0.5)
