@@ -139,12 +139,12 @@ local function spawnCloud()
     game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, nil)
     lastAbility = tick()
 
-    task.wait(1)
+    task.wait(0.7)
 
     resetConnection()
 
     humanoidRootPart.AssemblyLinearVelocity = Vector3.zero
-    humanoidRootPart.CFrame = CFrame.new(spawnCloudPosition + Vector3.new(0, 20, -10))
+    humanoidRootPart.CFrame = CFrame.new(spawnCloudPosition + Vector3.new(0, 35, -10))
 end
 
 -- Player Selector Script
