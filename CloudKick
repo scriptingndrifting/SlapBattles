@@ -64,7 +64,7 @@ local function tpArena()
         if not humanoidRootPart then return end
         humanoidRootPart.CFrame = CFrame.new(TPArenaPos, TPArenaPos + humanoidRootPart.CFrame.LookVector)
         for _, v in pairs(character:GetChildren()) do
-            if v:IsA("BasePart") then v.CFrame = humanoidRootPart.CFrame
+            if v:IsA("BasePart") then v.CFrame = humanoidRootPart.CFrame end
         end
         humanoidRootPart.AssemblyLinearVelocity = Vector3.zero
     end)
