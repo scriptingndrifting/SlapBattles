@@ -146,10 +146,10 @@ local function spawnCloud()
 
     connection = game:GetService("RunService").Heartbeat:Connect(function()
         humanoidRootPart.AssemblyLinearVelocity = Vector3.zero
-        humanoidRootPart.CFrame = CFrame.new(spawnCloudPosition + Vector3.new(0, 20, -10))
+        humanoidRootPart.CFrame = CFrame.new(spawnCloudPosition + Vector3.new(0, 15, -4))
     end)
 
-    task.wait(1.5)
+    task.wait(1.7)
 
     resetConnection()
 end
