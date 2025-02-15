@@ -61,6 +61,7 @@ local function tpArena()
     task.wait()
     resetConnection()
     connection = game:GetService("RunService").Heartbeat:Connect(function()
+        if not humanoidRootPart then return end
         humanoidRootPart.CFrame = CFrame.new(TPArenaPos, TPArenaPos + humanoidRootPart.CFrame.LookVector)
         for _, v in pairs(character:GetChildren()) do
             if v:IsA("BasePart") then v.CFrame = humanoidRootPart.CFrame
@@ -115,14 +116,7 @@ local function attack(root)
     task.wait(0.4)
     humanoid:ChangeState(Enum.HumanoidStateType.Running)
     task.wait()
-    humanoidRootPart.CFrame = originalCFrame
-    humanoidRootPart.AssemblyLinearVelocity = Vector3.zero
-    humanoidRootPart.AssemblyAngularVelocity = Vector3.zero
-    task.wait(0.2)
-    humanoidRootPart.CFrame = originalCFrame
-    task.wait(0.5)
-
-    if tick() - lastAbility < 8 then humanoid.Health = 0; task.wait(3.4) end
+    if tick() - lastAbility < 8 then tpArena(); humanoid.Health = 0; task.wait(3.4) end
     tpArena()
 end
 
