@@ -116,7 +116,7 @@ local function attack(root)
     task.wait(0.4)
     humanoid:ChangeState(Enum.HumanoidStateType.Running)
     task.wait()
-    if tick() - lastAbility < 8 then tpArena(); humanoid.Health = 0; task.wait(3.4) end
+    if tick() - lastAbility < 8 then tpArena(); humanoid.Health = 0; task.wait(3.7) end
     tpArena()
 end
 
