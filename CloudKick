@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 
-local TPArenaPos = Vector3.new(0, 500, 0)
+local TPArenaPos = Vector3.new(0, 150, 0)
 local spawnCloudPosition = Vector3.new(500, 150, 500)
 
 local brazilPart = game:GetService("Workspace").Lobby.brazil.portal
@@ -141,7 +141,7 @@ screenGui.Parent = game:GetService("CoreGui")
 
 local tpArenaButton = Instance.new("TextButton", screenGui)
 tpArenaButton.AnchorPoint = Vector2.new(1, 0)
-tpArenaButton.Size = UDim2.new(0, 200, 0, 25)
+tpArenaButton.Size = UDim2.new(0, 100, 0, 25)
 tpArenaButton.Position = UDim2.new(1, -200, 0, 0)
 tpArenaButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
 tpArenaButton.TextColor3 = Color3.fromRGB(255, 255, 255)
