@@ -156,6 +156,7 @@ con = tpArenaButton.Activated:Connect(function()
     resetConnection()
     connection = game:GetService("RunService").Heartbeat:Connect(function()
         humanoidRootPart.CFrame = CFrame.new(TPArenaPos, TPArenaPos + humanoidRootPart.CFrame.LookVector)
+        humanoidRootPart.AssemblyLinearVelocity = Vector3.zero
     end)
     task.wait(0.5)
     resetConnection()
