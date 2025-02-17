@@ -160,8 +160,7 @@ function StartFarm()
                 hittingTarget = false
             end)
             local delay2 = task.delay(0.5, function()
-                if not (tool) then return end
-                tool:Activate()
+                if tool then tool:Activate() end
             end)
 
             while task.wait() do
