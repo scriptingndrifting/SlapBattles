@@ -114,7 +114,7 @@ function StartFarm()
                 if not target then return 2 end
 
                 -- Position Checks
-                
+
                 local checks = {
                     target.CFrame.Position.Y < -20,
                     target.CFrame.Position.Y > 165,
@@ -123,9 +123,10 @@ function StartFarm()
                 if table.find(checks, true) then return 2 end
 
 
-                tool.GripPos = Vector3.new(14, 2, -2)
-                local tPos = target.CFrame.Position + Vector3.new(0, 14, 0)
-                local tCF = CFrame.new(tPos, tPos + Vector3.new(1, 0, 0))
+                tool.GripPos = Vector3.new(14, 2, 0)
+                local dir = CFrame.new(Vector3.new(0, target.CFrame.Position.Y, 0), target.CFrame.Position).LookVector
+                local tPos = target.CFrame.Position + Vector3.new(0, 14, 0) - dir * 3
+                local tCF = CFrame.new(tPos, tPos + dir)
 
                 hitbox.CFrame = target.CFrame
 
