@@ -92,8 +92,9 @@ function StartFarm()
                 if not (character and hrp) then
                     return 2
                 end
-                
-                if hrp.CFrame.Position.Y < -10 then
+                -- Position Checks
+
+                if (hrp.CFrame.Position.Y < -10 or hrp.CFrame.Position.Y > 170) then
                     hrp.CFrame = CFrame.new(safeArenaPos)
                     hrp.AssemblyLinearVelocity = Vector3.zero
                     hrp.AssemblyAngularVelocity = Vector3.zero
@@ -105,7 +106,15 @@ function StartFarm()
 
                 local target = tPlayer.Character:FindFirstChild("HumanoidRootPart")
                 if not target then return 2 end
-                if target.CFrame.Position.Y < -10 then return 2 end
+
+                -- Position Checks
+                local checks = {
+                    target.CFrame.Position.Y < -10,
+                    target.CFrame.Position.Y > 170,
+                    (target.CFrame.Position - safeArenaPos).Magnitude > 500
+                }
+                if table.find(checks, true) then return 2 end
+
 
                 tool.GripPos = Vector3.new(14, 2, -2)
                 local tPos = target.CFrame.Position + Vector3.new(0, 14, 0)
