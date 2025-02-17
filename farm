@@ -77,7 +77,7 @@ function StartFarm()
                 if not (tool) then
                     if not character then return 2 end
                     
-                    local tool = character:FindFirstChildOfClass("Tool")
+                    tool = character:FindFirstChildOfClass("Tool")
                     if not tool then
                         tool = player.Backpack:FindFirstChildOfClass("Tool")
                         if not tool then
@@ -144,8 +144,7 @@ function StartFarm()
                 hittingTarget = false
             end)
             local delay2 = task.delay(0.5, function()
-                if not (tool and (tool.Parent == character or tool.Parent == player.Backpack)) then return end
-                tool.Parent = character
+                if not (tool) then return end
                 tool:Activate()
             end)
 
