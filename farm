@@ -22,14 +22,9 @@ function tpArena()
 
     local connection
 
-    connection = game:GetService("RunService").Heartbeat:Connect(function()
-        if not humanoidRootPart then return end
-        humanoidRootPart.CFrame = (arenaPart.CFrame + Vector3.new(1, -1, 1))
-        for _, v in pairs(character:GetChildren()) do
-            if v:IsA("BasePart") then v.CFrame = humanoidRootPart.CFrame end
-        end
-        humanoidRootPart.AssemblyLinearVelocity = Vector3.new(45, 45, 45)
-    end)
+    humanoidRootPart.CFrame = (arenaPart.CFrame + Vector3.new(5, -3, 0))
+    
+    humanoid:MoveTo(arenaPart.CFrame.Position)
 
     task.wait(0.8)
     connection:Disconnect()
