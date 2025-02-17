@@ -10,6 +10,31 @@ game:GetService("Workspace").DEATHBARRIER2.CanTouch = false
 game:GetService("Workspace").dedBarrier.CanTouch = false
 game:GetService("Workspace").Lobby.brazil.portal.CanTouch = false
 
+local arenaPart = game:GetService("Workspace").Lobby.Teleport1
+
+function tpArena()
+    local character = player.Character or player.CharacterAdded:Wait()
+    if not character then return end
+    local humanoid = character:FindFirstChild("Humanoid")
+    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+
+    if not humanoid or not humanoidRootPart then return end
+
+    humanoidRootPart.CFrame = arenaPart.CFrame
+    task.wait()
+    local connection
+    connection = game:GetService("RunService").Heartbeat:Connect(function()
+        if not humanoidRootPart then return end
+        humanoidRootPart.CFrame = CFrame.new(TPArenaPos, TPArenaPos + humanoidRootPart.CFrame.LookVector)
+        for _, v in pairs(character:GetChildren()) do
+            if v:IsA("BasePart") then v.CFrame = humanoidRootPart.CFrame end
+        end
+        humanoidRootPart.AssemblyLinearVelocity = Vector3.zero
+    end)
+    task.wait(0.5)
+    connection:Disconnect()
+end
+
 function StartFarm()
     local character = player.Character
     local hrp = character:FindFirstChild("HumanoidRootPart")
@@ -41,13 +66,28 @@ function StartFarm()
 
         for _, tPlayer in ipairs(game:GetService("Players"):GetPlayers()) do
             local function hitTarget()
-                if not (active and farming) then return 2 end
+                if not (active and farming) then return 1 end
 
-                if not (player.Character and tool and tool.Parent == player.Character) then
+                if not (player.Character) then
                     return 2
                 end
-
                 local character = player.Character
+
+                if not (tool)
+                    tpArena()
+                    if not character then return 2 end
+                    
+                    local tool = character:FindFirstChildOfClass("Tool")
+                    if not tool then
+                        tool = player.Backpack:FindFirstChildOfClass("Tool")
+                        tool.Parent = character
+
+                        if not tool then
+                            return 2
+                        end
+                    end
+                end
+
                 local hrp = character:FindFirstChild("HumanoidRootPart")
                 if not (character and hrp) then
                     return 2
