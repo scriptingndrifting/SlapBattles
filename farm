@@ -107,7 +107,7 @@ function StartFarm()
                     hrp.AssemblyAngularVelocity = Vector3.zero
                 end
 
-                if tPlayer == player or not tPlayer.Character then return 2 end
+                if tPlayer == player or (not tPlayer.Character) then return 2 end
                 local isInArena = tPlayer.Character:FindFirstChild("isInArena")
                 if not (isInArena and isInArena.Value == true) then return 2 end
 
