@@ -123,7 +123,7 @@ function StartFarm()
                 if table.find(checks, true) then return 2 end
 
 
-                tool.GripPos = Vector3.new(14, 4, 2)
+                tool.GripPos = Vector3.new(14, 0, 2)
                 local dir = CFrame.new(Vector3.new(0, target.CFrame.Position.Y, 0), target.CFrame.Position).LookVector
                 local tPos = target.CFrame.Position + Vector3.new(0, 14, 0) - dir * 3
                 local tCF = CFrame.new(tPos, tPos + dir)
