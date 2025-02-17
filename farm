@@ -20,9 +20,20 @@ function tpArena()
 
     if not humanoid or not humanoidRootPart then return end
 
-    humanoidRootPart.CFrame = arenaPart.CFrame
-    task.wait(0.3)
     local connection
+
+    connection = game:GetService("RunService").Heartbeat:Connect(function()
+        if not humanoidRootPart then return end
+        humanoidRootPart.CFrame = arenaPart.CFrame
+        for _, v in pairs(character:GetChildren()) do
+            if v:IsA("BasePart") then v.CFrame = humanoidRootPart.CFrame end
+        end
+        humanoidRootPart.AssemblyLinearVelocity = Vector3.zero
+    end)
+
+    task.wait(0.8)
+    connection:Disconnect()
+
     connection = game:GetService("RunService").Heartbeat:Connect(function()
         if not humanoidRootPart then return end
         humanoidRootPart.CFrame = CFrame.new(safeArenaPos, safeArenaPos + humanoidRootPart.CFrame.LookVector)
