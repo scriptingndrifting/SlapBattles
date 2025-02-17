@@ -20,11 +20,23 @@ function tpArena()
 
     if not humanoid or not humanoidRootPart then return end
 
+    for _, v in ipairs(character:GetChildren()) do
+        if v:IsA("BasePart") then
+            v.CanTouch = true
+            v.CanQuery = true
+        end
+    end
+
     local connection
 
-    humanoidRootPart.CFrame = (arenaPart.CFrame + Vector3.new(5, -3, 0))
-    
-    humanoid:MoveTo(arenaPart.CFrame.Position)
+    connection = game:GetService("RunService").Heartbeat:Connect(function()
+        if not humanoidRootPart then return end
+        humanoidRootPart.CFrame = (arenaPart.CFrame + Vector3.new(1, -1, 1))
+        for _, v in pairs(character:GetChildren()) do
+            if v:IsA("BasePart") then v.CFrame = humanoidRootPart.CFrame end
+        end
+        humanoidRootPart.AssemblyLinearVelocity = Vector3.new(45, 45, 45)
+    end)
 
     task.wait(0.8)
     connection:Disconnect()
@@ -39,6 +51,13 @@ function tpArena()
     end)
     task.wait(0.5)
     connection:Disconnect()
+
+    for _, v in ipairs(character:GetChildren()) do
+        if v:IsA("BasePart") then
+            v.CanTouch = false
+            v.CanQuery = false
+        end
+    end
 end
 
 function StartFarm()
