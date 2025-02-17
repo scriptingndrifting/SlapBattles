@@ -86,7 +86,7 @@ function StartFarm()
                         end
                     end
                 end
-                if not tool or not (tool.Parent == character or tool.Parent == player.Backpack) then return end
+                if not tool or not (tool.Parent == character or tool.Parent == player.Backpack) then return 2 end
                 tool.Parent = character
 
                 local hrp = character:FindFirstChild("HumanoidRootPart")
@@ -136,6 +136,8 @@ function StartFarm()
                         v.AssemblyAngularVelocity = Vector3.zero
                     end
                 end
+
+                print("waited")
             end
 
             local hittingTarget = true
@@ -154,7 +156,7 @@ function StartFarm()
                     task.cancel(delay)
                     task.cancel(delay2)
                     return
-                else
+                elseif returned == 2 then
                     task.cancel(delay)
                     task.cancel(delay2)
                     break
