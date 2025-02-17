@@ -94,7 +94,13 @@ function StartFarm()
                 end
                 -- Position Checks
 
-                if (hrp.CFrame.Position.Y < -10 or hrp.CFrame.Position.Y > 170) then
+                local checks = {
+                    hrp.CFrame.Position.Y < -14,
+                    hrp.CFrame.Position.Y > 170,
+                    (hrp.CFrame.Position - safeArenaPos).Magnitude > 500
+                }
+
+                if table.find(checks, true) then
                     hrp.CFrame = CFrame.new(safeArenaPos)
                     hrp.AssemblyLinearVelocity = Vector3.zero
                     hrp.AssemblyAngularVelocity = Vector3.zero
@@ -108,9 +114,10 @@ function StartFarm()
                 if not target then return 2 end
 
                 -- Position Checks
+                
                 local checks = {
-                    target.CFrame.Position.Y < -10,
-                    target.CFrame.Position.Y > 170,
+                    target.CFrame.Position.Y < -20,
+                    target.CFrame.Position.Y > 165,
                     (target.CFrame.Position - safeArenaPos).Magnitude > 500
                 }
                 if table.find(checks, true) then return 2 end
