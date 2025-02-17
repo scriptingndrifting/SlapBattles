@@ -87,6 +87,11 @@ function StartFarm()
                     return 2
                 end
                 local character = player.Character
+                if not (character) then
+                    return 2
+                end
+                local hrp = character:FindFirstChild("HumanoidRootPart")
+                if not (hrp) then return 2 end
 
                 if not (tool) then
                     if not character then return 2 end
@@ -103,10 +108,6 @@ function StartFarm()
                 if not tool or not (tool.Parent == character or tool.Parent == player.Backpack) then return 2 end
                 tool.Parent = character
 
-                local hrp = character:FindFirstChild("HumanoidRootPart")
-                if not (character and hrp) then
-                    return 2
-                end
                 -- Position Checks
 
                 local checks = {
@@ -179,6 +180,8 @@ function StartFarm()
             end
         end
     end
+
+    print("End of function how???")
 end
 
 function onExit()
