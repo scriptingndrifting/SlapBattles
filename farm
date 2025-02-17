@@ -52,7 +52,7 @@ function StartFarm()
     if not (character and hrp) then
         return
     end
-    local tool
+    local tool = nil
     farming = true
 
     for _, v in ipairs(character:GetChildren()) do
@@ -86,7 +86,7 @@ function StartFarm()
                         end
                     end
                 end
-
+                if not tool or not (tool.Parent == character or tool.Parent == player.Backpack) then return end
                 tool.Parent = character
 
                 local hrp = character:FindFirstChild("HumanoidRootPart")
