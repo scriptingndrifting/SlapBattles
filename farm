@@ -73,7 +73,7 @@ function StartFarm()
                 end
                 local character = player.Character
 
-                if not (tool)
+                if not (tool) then
                     tpArena()
                     if not character then return 2 end
                     
