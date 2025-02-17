@@ -25,7 +25,7 @@ function tpArena()
     local connection
     connection = game:GetService("RunService").Heartbeat:Connect(function()
         if not humanoidRootPart then return end
-        humanoidRootPart.CFrame = CFrame.new(TPArenaPos, TPArenaPos + humanoidRootPart.CFrame.LookVector)
+        humanoidRootPart.CFrame = CFrame.new(safeArenaPos, safeArenaPos + humanoidRootPart.CFrame.LookVector)
         for _, v in pairs(character:GetChildren()) do
             if v:IsA("BasePart") then v.CFrame = humanoidRootPart.CFrame end
         end
