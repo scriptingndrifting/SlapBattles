@@ -186,6 +186,7 @@ local function attack(root)
                         v.AssemblyAngularVelocity = Vector3.zero
                     end
                 end
+                task.wait()
             else
                 local distance = (humanoidRootPart.Position - portalPos).Magnitude
                 if distance < 5 then break end -- Stop moving if close
