@@ -7,7 +7,7 @@ local player = Players.LocalPlayer
 
 local TPArenaPos = Vector3.new(0, 150, 0)
 local spawnCloudPosition = Vector3.new(500, 150, 500)
-local speed = 40
+local speed = 55
 
 local brazil = game:GetService("Workspace").Lobby.brazil
 local brazilPart = brazil.portal
@@ -171,7 +171,7 @@ local function attack(root)
 
         resetConnection()
 
-        -- Move towards portal at 40 studs per second
+        -- Move towards portal at speed studs per second
         local moveStart = tick()
         while tick() - moveStart < 3.8 do
             local distance = (humanoidRootPart.Position - portalPos).Magnitude
