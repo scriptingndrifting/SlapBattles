@@ -113,7 +113,7 @@ local function attack(root)
         end
     end)
 
-    task.wait(0.1)
+    task.wait(0.2)
 
     tool:Activate()
 
@@ -130,6 +130,8 @@ local function attack(root)
             end
         end
     end)
+
+    task.wait(0.4)
 
     game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, nil)
     lastAbility = tick()
