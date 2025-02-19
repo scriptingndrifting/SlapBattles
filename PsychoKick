@@ -7,9 +7,13 @@ local player = Players.LocalPlayer
 local TPArenaPos = Vector3.new(0, 150, 0)
 local spawnCloudPosition = Vector3.new(500, 150, 500)
 
-local brazilPart = game:GetService("Workspace").Lobby.brazil.portal
+local barzilPortal = game:GetService("Workspace").Lobby.brazil
+local brazilPart = barzilPortal.portal
 local arenaPart = game:GetService("Workspace").Lobby.Teleport1
-brazilPart.CanTouch = false
+
+for _, v in pairs(barzilPortal:GetDescendants()) do
+    if v:IsA("BasePart") then v.CanTouch = false end
+end
 
 local connection
 local camCon
