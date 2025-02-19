@@ -114,9 +114,9 @@ local function attack(root)
     camCon = game:GetService("RunService").RenderStepped:Connect(function()
         workspace.CurrentCamera.CameraSubject = closestPlayerRoot.Parent:FindFirstChild("Head") or closestPlayerRoot
     end)
-    camConDelay = task.delay(4, function()
+    camConDelay = task.delay(4.1, function()
         camCon:Disconnect()
-        workspace.CurrentCamera.CameraSubject = localplayer.Character:FindFirstChild("Head")
+        workspace.CurrentCamera.CameraSubject = character:FindFirstChild("Head")
     end)
 
     for _, v in ipairs(character:GetChildren()) do
