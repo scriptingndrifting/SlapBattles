@@ -13,6 +13,8 @@ local brazil = game:GetService("Workspace").Lobby.brazil
 local brazilPart = brazil.portal
 local arenaPart = game:GetService("Workspace").Lobby.Teleport1
 
+local portalPos = brazilPart.CFrame.Position + Vector3.new(0, 4, 0)
+
 for _, v in pairs(brazil:GetDescendants()) do
     if v:IsA("BasePart") then v.CanTouch = false end
 end
@@ -131,7 +133,7 @@ local function attack(root)
     resetConnection()
 
     local attackStart = tick()
-    while (humanoidRootPart.Position - portalPos).Magnitude > 5 or tick() - attackStart > 10 do
+    while (humanoidRootPart.CFrame.Position - portalPos).Magnitude > 5 or tick() - attackStart > 10 do
         -- Attack the target
         connection = game:GetService("RunService").Heartbeat:Connect(function()
             local dir = CFrame.new(Vector3.new(brazilPart.CFrame.Position.X, closestPlayerRoot.CFrame.Position.Y, brazilPart.CFrame.Position.Z), closestPlayerRoot.CFrame.Position).LookVector
@@ -185,11 +187,10 @@ local function attack(root)
         end
     end
 
+    resetConnection()
+
     connection = game:GetService("RunService").Heartbeat:Connect(function()
-        tool.GripPos = Vector3.new(14, 1, -1.3)
-        local dir = CFrame.new(Vector3.new(0, closestPlayerRoot.CFrame.Position.Y, 0), closestPlayerRoot.CFrame.Position).LookVector
-        local tPos = closestPlayerRoot.CFrame.Position + Vector3.new(0, 14, 0) - dir * 3
-        local tCF = CFrame.new(tPos, tPos + dir)
+        local tCF = CFrame.new(portalPos)
 
         for _, v in ipairs(character:GetChildren()) do
             if v:IsA("BasePart") then
@@ -200,36 +201,7 @@ local function attack(root)
         end
     end)
 
-    task.wait(0.2)
-
-    tool:Activate()
-
-    task.wait(0.2)
-
-    local args = {
-        [1] = {
-            ["grabEnabled"] = true
-        }
-    }
-
-    game:GetService("ReplicatedStorage").Psychokinesis:InvokeServer(unpack(args))
-
-    resetConnection()
-
-    local tweenInfo = TweenInfo.new(3.8, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-    for _, v in ipairs(character:GetChildren()) do
-        if v:IsA("BasePart") then
-            local goal = { CFrame = CFrame.new(brazilPart.Position + Vector3.new(0, 3, 0)) }
-    
-            local tween = TweenService:Create(v, tweenInfo, goal)
-            tween:Play()
-            
-            v.AssemblyLinearVelocity = Vector3.zero
-            v.AssemblyAngularVelocity = Vector3.zero
-        end
-    end
-
-    task.wait(4.4)
+    task.wait(0.5)
 
     humanoid:ChangeState(Enum.HumanoidStateType.Running)
 
