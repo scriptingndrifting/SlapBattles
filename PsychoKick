@@ -25,9 +25,10 @@ local camConDelay
 local con
 local connections = {}
 
-local active = true
-
 local cancelAttack = false
+local attackTarget
+
+local active = true
 
 local lastAbility = 0
 
@@ -90,7 +91,12 @@ local function tpBrazil()
     humanoidRootPart.CFrame = CFrame.new(brazilPart.CFrame.Position + Vector3.new(0, 5, 0))
 end
 
+local function bringTarget(root)
+
+end
+
 local function attack(root)
+    if attackTarget then return end
     local character = player.Character
     local humanoid = character:WaitForChild("Humanoid")
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
@@ -112,6 +118,8 @@ local function attack(root)
     local closestPlayerRoot = root
     if not closestPlayerRoot then return end
 
+    attackTarget = closestPlayerRoot
+
     local originalCFrame = humanoidRootPart.CFrame
 
     if camCon then camCon:Disconnect(); camCon = nil end
@@ -119,10 +127,6 @@ local function attack(root)
     camCon = game:GetService("RunService").RenderStepped:Connect(function()
         workspace.CurrentCamera.CameraSubject = closestPlayerRoot.Parent:FindFirstChild("Head") or closestPlayerRoot
     end)
-    --camConDelay = task.delay(4.1, function()
-    --    camCon:Disconnect()
-    --    workspace.CurrentCamera.CameraSubject = character:FindFirstChild("Head")
-    --end)
 
     for _, v in ipairs(character:GetChildren()) do
         if v:IsA("BasePart") then
@@ -136,74 +140,77 @@ local function attack(root)
 
     cancelAttack = false
 
-    local attackStart = tick()
-    while ((closestPlayerRoot.CFrame.Position - portalPos).Magnitude > 5 or tick() - attackStart > 10) and not cancelAttack do
-        -- Attack the target
-        connection = game:GetService("RunService").Heartbeat:Connect(function()
-            if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
-            local dir = CFrame.new(closestPlayerRoot.CFrame.Position, Vector3.new(brazilPart.CFrame.Position.X, closestPlayerRoot.CFrame.Position.Y, brazilPart.CFrame.Position.Z)).LookVector
-            local tPos = closestPlayerRoot.CFrame.Position + Vector3.new(0, 4, 0) + closestPlayerRoot.AssemblyLinearVelocity * 0.3
-            local tCF = CFrame.new(tPos, tPos + dir)
-    
-            for _, v in ipairs(character:GetChildren()) do
-                if v:IsA("BasePart") then
-                    v.CFrame = tCF
-                    v.AssemblyLinearVelocity = Vector3.zero
-                    v.AssemblyAngularVelocity = Vector3.zero
-                end
-            end
-        end)
-
-        if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
-
-        task.wait(0.2)
-
-        local args = {
-            [1] = closestPlayerRoot
-        }
-
-        game:GetService("ReplicatedStorage").GeneralHit:FireServer(unpack(args))
-
-        task.wait(0.2)
-
-        local args = {
-            [1] = {
-                ["grabEnabled"] = true
-            }
-        }
-        game:GetService("ReplicatedStorage").Psychokinesis:InvokeServer(unpack(args))
-
-        resetConnection()
-
-        -- Move towards portal at speed studs per second
-        local moveStart = tick()
-        while (tick() - moveStart < 3.8) and not cancelAttack do
-            if (humanoidRootPart.CFrame.Position - portalPos).Magnitude < 20 then
+    local function bringTarget()
+        local attackStart = tick()
+        while ((closestPlayerRoot.CFrame.Position - portalPos).Magnitude > 5 or tick() - attackStart > 10) and not cancelAttack do
+            -- Attack the target
+            connection = game:GetService("RunService").Heartbeat:Connect(function()
+                if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
+                local dir = CFrame.new(closestPlayerRoot.CFrame.Position, Vector3.new(brazilPart.CFrame.Position.X, closestPlayerRoot.CFrame.Position.Y, brazilPart.CFrame.Position.Z)).LookVector
+                local tPos = closestPlayerRoot.CFrame.Position + Vector3.new(0, 4, 0) + closestPlayerRoot.AssemblyLinearVelocity * 0.3
+                local tCF = CFrame.new(tPos, tPos + dir)
+        
                 for _, v in ipairs(character:GetChildren()) do
                     if v:IsA("BasePart") then
-                        v.CFrame = CFrame.new(portalPos)
+                        v.CFrame = tCF
                         v.AssemblyLinearVelocity = Vector3.zero
                         v.AssemblyAngularVelocity = Vector3.zero
                     end
                 end
-                task.wait()
-            else
-                local distance = (humanoidRootPart.Position - portalPos).Magnitude
-                if distance < 5 then break end -- Stop moving if close
+            end)
 
-                local direction = (portalPos - humanoidRootPart.Position).Unit
-                local moveStep = direction * speed * task.wait()
+            if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then break end
 
-                for _, v in ipairs(character:GetChildren()) do
-                    if v:IsA("BasePart") then
-                        v.CFrame = v.CFrame + moveStep
-                        v.AssemblyLinearVelocity = Vector3.zero
-                        v.AssemblyAngularVelocity = Vector3.zero
+            task.wait(0.2)
+
+            local args = {
+                [1] = closestPlayerRoot
+            }
+
+            game:GetService("ReplicatedStorage").GeneralHit:FireServer(unpack(args))
+
+            task.wait(0.2)
+
+            local args = {
+                [1] = {
+                    ["grabEnabled"] = true
+                }
+            }
+            game:GetService("ReplicatedStorage").Psychokinesis:InvokeServer(unpack(args))
+
+            resetConnection()
+
+            -- Move towards portal at speed studs per second
+            local moveStart = tick()
+            while (tick() - moveStart < 3.8) and not cancelAttack do
+                if (humanoidRootPart.CFrame.Position - portalPos).Magnitude < 20 then
+                    for _, v in ipairs(character:GetChildren()) do
+                        if v:IsA("BasePart") then
+                            v.CFrame = CFrame.new(portalPos)
+                            v.AssemblyLinearVelocity = Vector3.zero
+                            v.AssemblyAngularVelocity = Vector3.zero
+                        end
+                    end
+                    task.wait()
+                else
+                    local distance = (humanoidRootPart.Position - portalPos).Magnitude
+                    if distance < 5 then break end -- Stop moving if close
+
+                    local direction = (portalPos - humanoidRootPart.Position).Unit
+                    local moveStep = direction * speed * task.wait()
+
+                    for _, v in ipairs(character:GetChildren()) do
+                        if v:IsA("BasePart") then
+                            v.CFrame = v.CFrame + moveStep
+                            v.AssemblyLinearVelocity = Vector3.zero
+                            v.AssemblyAngularVelocity = Vector3.zero
+                        end
                     end
                 end
             end
         end
     end
+    bringTarget()
 
     resetConnection()
 
@@ -220,11 +227,10 @@ local function attack(root)
     end)
 
     task.wait(0.5)
-
     resetConnection()
 
     humanoid:ChangeState(Enum.HumanoidStateType.Running)
-
+    task.wait()
     for _, v in ipairs(character:GetChildren()) do
         if v:IsA("BasePart") then
             v.CFrame = originalCFrame
@@ -236,9 +242,11 @@ local function attack(root)
             v.CanTouch = true
         end
     end
+    humanoid:ChangeState(Enum.HumanoidStateType.Running)
 
     if camCon then camCon:Disconnect() end
     workspace.CurrentCamera.CameraSubject = character:FindFirstChild("Head")
+    attackTarget = nil
 end
 
 -- Player Selector Script
@@ -283,20 +291,20 @@ local function createPlayerButton(playerName)
     button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
     button.TextColor3 = Color3.fromRGB(255, 255, 255)
     
-    local lastClick = 0  -- Stores the timestamp of the last click
+    local lastClick = 0
 
     button.MouseButton1Click:Connect(function()
         local currentTime = tick()  -- Get current time in seconds
-        if currentTime - lastClick < 0.3 then
+        if (not attackTarget) and currentTime - lastClick < 0.3 then
             -- Double click detected (Attack)
             local targetPlayer = game:GetService("Players"):FindFirstChild(playerName)
             if not targetPlayer then return end
             local targetPlayerRoot = targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart")
             if targetPlayerRoot then
                 attack(targetPlayerRoot)
-                if camCon then camCon:Disconnect() end
-                if camConDelay then task.cancel(camConDelay) end
-                workspace.CurrentCamera.CameraSubject = localplayer.Character:FindFirstChild("Head")
+                --if camCon then camCon:Disconnect() end
+                --if camConDelay then task.cancel(camConDelay) end
+                --workspace.CurrentCamera.CameraSubject = localplayer.Character:FindFirstChild("Head")
             end
         else
             -- Single click detected (View Player)
@@ -384,5 +392,8 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
         active = false
         onExit()
         return
+    end
+    if input.KeyCode == Enum.KeyCode.G then
+        cancelAttack = true
     end
 end)
