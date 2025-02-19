@@ -137,6 +137,7 @@ local function attack(root)
 
     task.wait(0.4)
 
+    humanoid:ChangeState(Enum.HumanoidStateType.Running)
     game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, nil)
     lastAbility = tick()
 
