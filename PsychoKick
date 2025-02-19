@@ -185,7 +185,7 @@ local function attack(root)
         end
     end
 
-    task.wait(3.5)
+    task.wait(4.4)
 
     -- humanoid:ChangeState(Enum.HumanoidStateType.Running)
     -- game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, nil)
