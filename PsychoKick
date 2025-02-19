@@ -136,8 +136,9 @@ local function attack(root)
     while (humanoidRootPart.CFrame.Position - portalPos).Magnitude > 5 or tick() - attackStart > 10 do
         -- Attack the target
         connection = game:GetService("RunService").Heartbeat:Connect(function()
+            if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
             local dir = CFrame.new(Vector3.new(brazilPart.CFrame.Position.X, closestPlayerRoot.CFrame.Position.Y, brazilPart.CFrame.Position.Z), closestPlayerRoot.CFrame.Position).LookVector
-            local tPos = closestPlayerRoot.CFrame.Position + Vector3.new(0, 6, 0) + closestPlayerRoot.AssemblyLinearVelocity * 0.3
+            local tPos = closestPlayerRoot.CFrame.Position + Vector3.new(0, 4, 0) + closestPlayerRoot.AssemblyLinearVelocity * 0.3
             local tCF = CFrame.new(tPos, tPos + dir)
     
             for _, v in ipairs(character:GetChildren()) do
@@ -148,6 +149,8 @@ local function attack(root)
                 end
             end
         end)
+
+        if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
 
         task.wait(0.2)
 
@@ -170,7 +173,7 @@ local function attack(root)
 
         -- Move towards portal at 40 studs per second
         local moveStart = tick()
-        while tick() - moveStart < 4 do
+        while tick() - moveStart < 3.8 do
             local distance = (humanoidRootPart.Position - portalPos).Magnitude
             if distance < 5 then break end -- Stop moving if close
 
@@ -216,6 +219,9 @@ local function attack(root)
             v.CanTouch = true
         end
     end
+
+    if camCon then camCon:Disconnect() end
+    workspace.CurrentCamera.CameraSubject = character:FindFirstChild("Head")
 end
 
 -- Player Selector Script
@@ -271,6 +277,8 @@ local function createPlayerButton(playerName)
             local targetPlayerRoot = targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart")
             if targetPlayerRoot then
                 attack(targetPlayerRoot)
+                if camCon then camCon:Disconnect() end
+                workspace.CurrentCamera.CameraSubject = character:FindFirstChild("Head")
             end
         else
             -- Single click detected (View Player)
