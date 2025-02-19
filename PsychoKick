@@ -196,6 +196,11 @@ local function attack(root)
     for _, v in ipairs(character:GetChildren()) do
         if v:IsA("BasePart") then
             v.CFrame = originalCFrame
+        end
+    end
+    task.wait()
+    for _, v in ipairs(character:GetChildren()) do
+        if v:IsA("BasePart") then
             v.CanTouch = true
         end
     end
