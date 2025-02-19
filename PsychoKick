@@ -27,6 +27,8 @@ local connections = {}
 
 local active = true
 
+local cancelAttack = false
+
 local lastAbility = 0
 
 if not brazilPart then
@@ -132,8 +134,10 @@ local function attack(root)
 
     resetConnection()
 
+    cancelAttack = false
+
     local attackStart = tick()
-    while (humanoidRootPart.CFrame.Position - portalPos).Magnitude > 5 or tick() - attackStart > 10 do
+    while ((closestPlayerRoot.CFrame.Position - portalPos).Magnitude > 5 or tick() - attackStart > 10) and not cancelAttack do
         -- Attack the target
         connection = game:GetService("RunService").Heartbeat:Connect(function()
             if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
@@ -173,18 +177,28 @@ local function attack(root)
 
         -- Move towards portal at speed studs per second
         local moveStart = tick()
-        while tick() - moveStart < 3.8 do
-            local distance = (humanoidRootPart.Position - portalPos).Magnitude
-            if distance < 5 then break end -- Stop moving if close
+        while (tick() - moveStart < 3.8) and not cancelAttack do
+            if (humanoidRootPart.CFrame.Position - portalPos).Magnitude < 20 then
+                for _, v in ipairs(character:GetChildren()) do
+                    if v:IsA("BasePart") then
+                        v.CFrame = CFrame.new(portalPos)
+                        v.AssemblyLinearVelocity = Vector3.zero
+                        v.AssemblyAngularVelocity = Vector3.zero
+                    end
+                end
+            else
+                local distance = (humanoidRootPart.Position - portalPos).Magnitude
+                if distance < 5 then break end -- Stop moving if close
 
-            local direction = (portalPos - humanoidRootPart.Position).Unit
-            local moveStep = direction * speed * task.wait()
+                local direction = (portalPos - humanoidRootPart.Position).Unit
+                local moveStep = direction * speed * task.wait()
 
-            for _, v in ipairs(character:GetChildren()) do
-                if v:IsA("BasePart") then
-                    v.CFrame = v.CFrame + moveStep
-                    v.AssemblyLinearVelocity = Vector3.zero
-                    v.AssemblyAngularVelocity = Vector3.zero
+                for _, v in ipairs(character:GetChildren()) do
+                    if v:IsA("BasePart") then
+                        v.CFrame = v.CFrame + moveStep
+                        v.AssemblyLinearVelocity = Vector3.zero
+                        v.AssemblyAngularVelocity = Vector3.zero
+                    end
                 end
             end
         end
