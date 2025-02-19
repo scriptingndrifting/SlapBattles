@@ -137,7 +137,7 @@ local function attack(root)
         -- Attack the target
         connection = game:GetService("RunService").Heartbeat:Connect(function()
             if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
-            local dir = CFrame.new(Vector3.new(brazilPart.CFrame.Position.X, closestPlayerRoot.CFrame.Position.Y, brazilPart.CFrame.Position.Z), closestPlayerRoot.CFrame.Position).LookVector
+            local dir = CFrame.new(closestPlayerRoot.CFrame.Position, Vector3.new(brazilPart.CFrame.Position.X, closestPlayerRoot.CFrame.Position.Y, brazilPart.CFrame.Position.Z)).LookVector
             local tPos = closestPlayerRoot.CFrame.Position + Vector3.new(0, 4, 0) + closestPlayerRoot.AssemblyLinearVelocity * 0.3
             local tCF = CFrame.new(tPos, tPos + dir)
     
