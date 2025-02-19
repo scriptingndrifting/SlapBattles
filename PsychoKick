@@ -76,6 +76,14 @@ local function tpArena()
     resetConnection()
 end
 
+local function tpBrazil()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+    humanoidRootPart.CFrame = CFame.new(barzilPart.CFrame.Position + Vector3.new(0, 5, 0))
+end
+
 local function attack(root)
     local character = player.Character
     local humanoid = character:WaitForChild("Humanoid")
@@ -162,6 +170,16 @@ tpArenaButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
 tpArenaButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 tpArenaButton.Text = "TP Arena"
 con = tpArenaButton.Activated:Connect(tpArena)
+table.insert(connections, con)
+
+local tpBrazilButton = Instance.new("TextButton", screenGui)
+tpBrazilButton.AnchorPoint = Vector2.new(1, 0)
+tpBrazilButton.Size = UDim2.new(0, 100, 0, 25)
+tpBrazilButton.Position = UDim2.new(1, -200, 0, 25)
+tpBrazilButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+tpBrazilButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+tpBrazilButton.Text = "TP Arena"
+con = tpBrazilButton.Activated:Connect(tpBrazil)
 table.insert(connections, con)
 
 local frame = Instance.new("ScrollingFrame")
