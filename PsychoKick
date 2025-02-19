@@ -7,7 +7,7 @@ local player = Players.LocalPlayer
 
 local TPArenaPos = Vector3.new(0, 150, 0)
 local spawnCloudPosition = Vector3.new(500, 150, 500)
-local speed = 55
+local speed = 100
 
 local brazil = game:GetService("Workspace").Lobby.brazil
 local brazilPart = brazil.portal
@@ -278,7 +278,7 @@ local function createPlayerButton(playerName)
             if targetPlayerRoot then
                 attack(targetPlayerRoot)
                 if camCon then camCon:Disconnect() end
-                workspace.CurrentCamera.CameraSubject = character:FindFirstChild("Head")
+                workspace.CurrentCamera.CameraSubject = localplayer.Character:FindFirstChild("Head")
             end
         else
             -- Single click detected (View Player)
