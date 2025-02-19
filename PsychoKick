@@ -152,8 +152,6 @@ local function attack(root)
 
     game:GetService("ReplicatedStorage").Psychokinesis:InvokeServer(unpack(args))
 
-    task.wait(0.2)
-
 
     resetConnection()
 
@@ -167,7 +165,7 @@ local function attack(root)
     --    end
     --end)
 
-    local tweenInfo = TweenInfo.new(3, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+    local tweenInfo = TweenInfo.new(3.8, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
     for _, v in ipairs(character:GetChildren()) do
         if v:IsA("BasePart") then
             local goal = { CFrame = CFrame.new(brazilPart.Position + Vector3.new(0, 3, 0)) }
@@ -186,9 +184,13 @@ local function attack(root)
     -- game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, nil)
     -- lastAbility = tick()
 
-    resetConnection()
     humanoid:ChangeState(Enum.HumanoidStateType.Running)
-    humanoidRootPart.CFrame = originalCFrame
+
+    for _, v in ipairs(character:GetChildren()) do
+        if v:IsA("BasePart") then
+            v.CFrame = originalCFrame
+        end
+    end
 end
 
 -- Player Selector Script
