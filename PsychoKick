@@ -278,6 +278,7 @@ local function createPlayerButton(playerName)
             if targetPlayerRoot then
                 attack(targetPlayerRoot)
                 if camCon then camCon:Disconnect() end
+                if camConDelay then task.cancel(camConDelay) end
                 workspace.CurrentCamera.CameraSubject = localplayer.Character:FindFirstChild("Head")
             end
         else
