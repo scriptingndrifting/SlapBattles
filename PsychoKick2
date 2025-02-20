@@ -150,7 +150,7 @@ local function attack(root)
             connection = game:GetService("RunService").Heartbeat:Connect(function()
                 if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
                 local dir = CFrame.new(closestPlayerRoot.CFrame.Position, Vector3.new(brazilPart.CFrame.Position.X, closestPlayerRoot.CFrame.Position.Y, brazilPart.CFrame.Position.Z)).LookVector
-                local tPos = closestPlayerRoot.CFrame.Position + Vector3.new(0, 4, 0) + closestPlayerRoot.AssemblyLinearVelocity * 0.3
+                local tPos = closestPlayerRoot.CFrame.Position + Vector3.new(0, 4, 0) + closestPlayerRoot.AssemblyLinearVelocity * 0.2
                 local tCF = CFrame.new(tPos, tPos + dir)
         
                 for _, v in ipairs(character:GetChildren()) do
@@ -188,7 +188,7 @@ local function attack(root)
                 if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
                 
                 local direction = (portalPos - humanoidRootPart.Position).Unit
-                local newPos = targetPlayerRoot.CFrame.Position + direction * dragDistance
+                local newPos = closestPlayerRoot.CFrame.Position + direction * dragDistance
 
                 for _, v in ipairs(character:GetChildren()) do
                     if v:IsA("BasePart") then
