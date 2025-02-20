@@ -196,11 +196,11 @@ local function attack(root)
                 local offset = portalPos - closestPlayerRoot.CFrame.Position
                 local dir = offset.Magnitude > 0 and offset.Unit or Vector3.new(1, 0, 0)
 
-                local newPos = closestPlayerRoot.CFrame.Position + dir * distance
+                local newPos = closestPlayerRoot.CFrame.Position + dir * dragDistance
 
                 for _, v in ipairs(character:GetChildren()) do
                     if v:IsA("BasePart") then
-                        v.CFrame = CFrame.new(newPos)
+                        v.CFrame = CFrame.new(distance > dragDistance and newPos or portalPos)
                         v.CanTouch = false
                         v.AssemblyLinearVelocity = Vector3.new(30, 30, 30)
                         v.AssemblyAngularVelocity = Vector3.new(30, 30, 30)
