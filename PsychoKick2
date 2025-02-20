@@ -206,20 +206,21 @@ local function attack(root)
         for _, v in ipairs(character:GetChildren()) do
             if v:IsA("BasePart") then
                 v.CFrame = originalCFrame
+                v.CanTouch = false
                 v.AssemblyLinearVelocity = Vector3.zero
                 v.AssemblyAngularVelocity = Vector3.zero
             end
         end
     end)
-    task.wait(0.2)
+    task.wait(0.4)
+    resetConnection()
+    task.wait()
+    humanoid:ChangeState(Enum.HumanoidStateType.Running)
     for _, v in ipairs(character:GetChildren()) do
         if v:IsA("BasePart") then
             v.CanTouch = true
         end
     end
-    humanoid:ChangeState(Enum.HumanoidStateType.Running)
-    task.wait()
-    resetConnection()
     if camCon then camCon:Disconnect() end
     workspace.CurrentCamera.CameraSubject = character:FindFirstChild("Head")
     attackTarget = nil
