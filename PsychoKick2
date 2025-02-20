@@ -182,9 +182,11 @@ local function attack(root)
             while (tick() - moveStart < 3.8) and not cancelAttack do
                 -- Make sure of target
                 if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
+
+                local distance = (portalPos - closestPlayerRoot.Position).Magnitude
                 
                 local direction = (portalPos - closestPlayerRoot.Position).Unit
-                local newPos = closestPlayerRoot.CFrame.Position + direction * dragDistance
+                local newPos = closestPlayerRoot.CFrame.Position + direction * math.min(dragDistance, distance)
 
                 for _, v in ipairs(character:GetChildren()) do
                     if v:IsA("BasePart") then
