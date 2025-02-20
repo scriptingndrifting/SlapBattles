@@ -70,6 +70,8 @@ local function tpArena()
 
     humanoidRootPart.CFrame = arenaPart.CFrame
     task.wait()
+    humanoidRootPart.CanTouch = true
+    humanoidRootPart.CFrame = arenaPart.CFrame
     resetConnection()
     connection = game:GetService("RunService").Heartbeat:Connect(function()
         if not humanoidRootPart then return end
@@ -146,7 +148,7 @@ local function attack(root)
             connection = game:GetService("RunService").Heartbeat:Connect(function()
                 if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
                 local dir = (Vector3.new(portalPos.X, 0, portalPos.Z) - Vector3.new(closestPlayerRoot.CFrame.Position.X, 0, closestPlayerRoot.CFrame.Position.Z)).Unit
-                local tPos = closestPlayerRoot.CFrame.Position + Vector3.new(0, 4, 0) + closestPlayerRoot.AssemblyLinearVelocity * 0.2
+                local tPos = closestPlayerRoot.CFrame.Position + Vector3.new(0, 3, 0) + closestPlayerRoot.CFrame.LookVector * -5 + closestPlayerRoot.AssemblyLinearVelocity * 0.2
                 local tCF = CFrame.new(tPos, tPos + dir)
         
                 for _, v in ipairs(character:GetChildren()) do
@@ -205,20 +207,21 @@ local function attack(root)
 
     resetConnection()
 
-    connection = game:GetService("RunService").Heartbeat:Connect(function()
-        for _, v in ipairs(character:GetChildren()) do
-            if v:IsA("BasePart") then
-                v.CFrame = originalCFrame
-                v.CanTouch = false
-                v.AssemblyLinearVelocity = Vector3.zero
-                v.AssemblyAngularVelocity = Vector3.zero
-            end
-        end
-    end)
+    --connection = game:GetService("RunService").Heartbeat:Connect(function()
+    --    for _, v in ipairs(character:GetChildren()) do
+    --        if v:IsA("BasePart") then
+    --            v.CFrame = originalCFrame
+    --            v.CanTouch = false
+    --            v.AssemblyLinearVelocity = Vector3.zero
+    --            v.AssemblyAngularVelocity = Vector3.zero
+    --        end
+    --    end
+    --end)
     task.wait(0.4)
     resetConnection()
     task.wait()
     humanoid:ChangeState(Enum.HumanoidStateType.Running)
+    tpArena()
     for _, v in ipairs(character:GetChildren()) do
         if v:IsA("BasePart") then
             v.CanTouch = true
