@@ -145,11 +145,11 @@ local function attack(root)
         local attackStart = tick()
         while ((closestPlayerRoot.CFrame.Position - portalPos).Magnitude > 10 or tick() - attackStart < 10) and not cancelAttack do
             -- Make sure of target
-            if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace and closestPlayerRoot.CFrame.Position.Y > -10) then return end
+            if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace and closestPlayerRoot.CFrame.Position.Y > -14) then return end
 
             -- Attack the target
             connection = game:GetService("RunService").Heartbeat:Connect(function()
-                if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace and closestPlayerRoot.CFrame.Position.Y > -10) then return end
+                if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace and closestPlayerRoot.CFrame.Position.Y > -14) then return end
 
                 local offset = Vector3.new(portalPos.X, 0, portalPos.Z) - Vector3.new(closestPlayerRoot.CFrame.Position.X, 0, closestPlayerRoot.CFrame.Position.Z)
                 local dir = offset.Magnitude > 0 and offset.Unit or Vector3.new(1, 0, 0)
@@ -189,7 +189,7 @@ local function attack(root)
             local moveStart = tick()
             while (tick() - moveStart < 3.8) and not cancelAttack do
                 -- Make sure of target
-                if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace and closestPlayerRoot.CFrame.Position.Y > -10) then return end
+                if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace and closestPlayerRoot.CFrame.Position.Y > -14) then return end
 
                 local distance = (portalPos - closestPlayerRoot.CFrame.Position).Magnitude
                 
@@ -214,10 +214,6 @@ local function attack(root)
         end
     end
     bringTarget()
-    if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace and closestPlayerRoot.CFrame.Position.Y > -10) then
-        if camCon then camCon:Disconnect() end
-        return
-    end
 
     resetConnection()
 
