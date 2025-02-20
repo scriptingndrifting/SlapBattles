@@ -193,7 +193,7 @@ local function attack(root)
 
                 local distance = (portalPos - closestPlayerRoot.CFrame.Position).Magnitude
                 
-                local offset = Vector3.new(portalPos.X, 0, portalPos.Z) - Vector3.new(closestPlayerRoot.CFrame.Position.X, 0, closestPlayerRoot.CFrame.Position.Z)
+                local offset = portalPos - closestPlayerRoot.CFrame.Position
                 local dir = offset.Magnitude > 0 and offset.Unit or Vector3.new(1, 0, 0)
 
                 local newPos = closestPlayerRoot.CFrame.Position + dir * math.min(dragDistance, distance)
