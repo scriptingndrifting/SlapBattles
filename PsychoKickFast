@@ -154,7 +154,7 @@ local function attack(root)
                 local offset = Vector3.new(portalPos.X, 0, portalPos.Z) - Vector3.new(closestPlayerRoot.CFrame.Position.X, 0, closestPlayerRoot.CFrame.Position.Z)
                 local dir = offset.Magnitude > 0 and offset.Unit or Vector3.new(1, 0, 0)
 
-                local tPos = closestPlayerRoot.CFrame.Position + dir * 14
+                local tPos = closestPlayerRoot.CFrame.Position + dir * 18 + Vector3.new(0, -3, 0)
                 local tCF = CFrame.new(tPos, tPos + dir)
         
                 for _, v in ipairs(character:GetChildren()) do
