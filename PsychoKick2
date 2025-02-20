@@ -187,7 +187,7 @@ local function attack(root)
                 -- Make sure of target
                 if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
                 
-                local direction = (portalPos - humanoidRootPart.Position).Unit
+                local direction = (portalPos - closestPlayerRoot.Position).Unit
                 local newPos = closestPlayerRoot.CFrame.Position + direction * dragDistance
 
                 for _, v in ipairs(character:GetChildren()) do
