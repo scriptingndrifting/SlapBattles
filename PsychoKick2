@@ -142,7 +142,7 @@ local function attack(root)
 
     local function bringTarget()
         local attackStart = tick()
-        while not ((closestPlayerRoot.CFrame.Position - portalPos).Magnitude > 5 or tick() - attackStart > 10) and not cancelAttack do
+        while ((closestPlayerRoot.CFrame.Position - portalPos).Magnitude > 5 or tick() - attackStart < 10) and not cancelAttack do
             -- Make sure of target
             if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
 
