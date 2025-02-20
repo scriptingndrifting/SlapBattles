@@ -7,7 +7,7 @@ local player = Players.LocalPlayer
 
 local TPArenaPos = Vector3.new(0, 150, 0)
 local spawnCloudPosition = Vector3.new(500, 150, 500)
-local speed = 115
+local dragDistance = 250 -- How far the player is from the target
 
 local brazil = game:GetService("Workspace").Lobby.brazil
 local brazilPart = brazil.portal
@@ -142,7 +142,10 @@ local function attack(root)
 
     local function bringTarget()
         local attackStart = tick()
-        while ((closestPlayerRoot.CFrame.Position - portalPos).Magnitude > 5 or tick() - attackStart > 10) and not cancelAttack do
+        while not ((closestPlayerRoot.CFrame.Position - portalPos).Magnitude > 5 or tick() - attackStart > 10) and not cancelAttack do
+            -- Make sure of target
+            if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
+
             -- Attack the target
             connection = game:GetService("RunService").Heartbeat:Connect(function()
                 if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
@@ -158,8 +161,6 @@ local function attack(root)
                     end
                 end
             end)
-
-            if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then break end
 
             task.wait(0.2)
 
@@ -183,30 +184,21 @@ local function attack(root)
             -- Move towards portal at speed studs per second
             local moveStart = tick()
             while (tick() - moveStart < 3.8) and not cancelAttack do
-                if (humanoidRootPart.CFrame.Position - portalPos).Magnitude < 20 then
-                    for _, v in ipairs(character:GetChildren()) do
-                        if v:IsA("BasePart") then
-                            v.CFrame = CFrame.new(portalPos)
-                            v.AssemblyLinearVelocity = Vector3.zero
-                            v.AssemblyAngularVelocity = Vector3.zero
-                        end
-                    end
-                    task.wait()
-                else
-                    local distance = (humanoidRootPart.Position - portalPos).Magnitude
-                    if distance < 5 then break end -- Stop moving if close
+                -- Make sure of target
+                if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
+                
+                local direction = (portalPos - humanoidRootPart.Position).Unit
+                local newPos = targetPlayerRoot.CFrame.Position + direction * dragDistance
 
-                    local direction = (portalPos - humanoidRootPart.Position).Unit
-                    local moveStep = direction * speed * task.wait()
-
-                    for _, v in ipairs(character:GetChildren()) do
-                        if v:IsA("BasePart") then
-                            v.CFrame = v.CFrame + moveStep
-                            v.AssemblyLinearVelocity = Vector3.zero
-                            v.AssemblyAngularVelocity = Vector3.zero
-                        end
+                for _, v in ipairs(character:GetChildren()) do
+                    if v:IsA("BasePart") then
+                        v.CFrame = CFrame.new(newPos, Vector3.new(brazilPart.X, newPos.Y, brazilPart.Z))
+                        v.AssemblyLinearVelocity = Vector3.zero
+                        v.AssemblyAngularVelocity = Vector3.zero
                     end
                 end
+
+                task.wait()
             end
         end
     end
