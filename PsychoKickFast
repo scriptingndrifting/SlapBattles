@@ -151,7 +151,9 @@ local function attack(root)
             connection = game:GetService("RunService").Heartbeat:Connect(function()
                 if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace and closestPlayerRoot.CFrame.Position.Y > -10) then return end
 
-                local dir = (Vector3.new(portalPos.X, 0, portalPos.Z) - Vector3.new(closestPlayerRoot.CFrame.Position.X, 0, closestPlayerRoot.CFrame.Position.Z)).Unit
+                local offset = Vector3.new(portalPos.X, 0, portalPos.Z) - Vector3.new(closestPlayerRoot.CFrame.Position.X, 0, closestPlayerRoot.CFrame.Position.Z)
+                local dir = offset.Magnitude > 0 and offset.Unit or Vector3.new(1, 0, 0)
+
                 local tPos = closestPlayerRoot.CFrame.Position + Vector3.new(0, 3, 0) + closestPlayerRoot.CFrame.LookVector * -5 + closestPlayerRoot.AssemblyLinearVelocity * 0.2
                 local tCF = CFrame.new(tPos, tPos + dir)
         
@@ -191,8 +193,10 @@ local function attack(root)
 
                 local distance = (portalPos - closestPlayerRoot.CFrame.Position).Magnitude
                 
-                local direction = (portalPos - closestPlayerRoot.CFrame.Position).Unit
-                local newPos = closestPlayerRoot.CFrame.Position + direction * math.min(dragDistance, distance)
+                local offset = Vector3.new(portalPos.X, 0, portalPos.Z) - Vector3.new(closestPlayerRoot.CFrame.Position.X, 0, closestPlayerRoot.CFrame.Position.Z)
+                local dir = offset.Magnitude > 0 and offset.Unit or Vector3.new(1, 0, 0)
+
+                local newPos = closestPlayerRoot.CFrame.Position + dir * math.min(dragDistance, distance)
 
                 for _, v in ipairs(character:GetChildren()) do
                     if v:IsA("BasePart") then
