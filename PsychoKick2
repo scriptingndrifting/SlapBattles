@@ -192,7 +192,7 @@ local function attack(root)
 
                 for _, v in ipairs(character:GetChildren()) do
                     if v:IsA("BasePart") then
-                        v.CFrame = CFrame.new(newPos, Vector3.new(brazilPart.X, newPos.Y, brazilPart.Z))
+                        v.CFrame = CFrame.new(newPos, Vector3.new(brazilPart.CFrame.Position.X, newPos.Y, brazilPart.CFrame.Position.Z))
                         v.AssemblyLinearVelocity = Vector3.zero
                         v.AssemblyAngularVelocity = Vector3.zero
                     end
