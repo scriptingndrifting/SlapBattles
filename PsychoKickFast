@@ -18,6 +18,9 @@ local portalPos = brazilPart.CFrame.Position
 for _, v in pairs(brazil:GetDescendants()) do
     if v:IsA("BasePart") then v.CanTouch = false end
 end
+game:GetService("Workspace").DEATHBARRIER.CanTouch = false
+game:GetService("Workspace").DEATHBARRIER2.CanTouch = false
+game:GetService("Workspace").dedBarrier.CanTouch = false
 
 local connection
 local camCon
@@ -147,7 +150,7 @@ local function attack(root)
             -- Attack the target
             connection = game:GetService("RunService").Heartbeat:Connect(function()
                 if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace and closestPlayerRoot.CFrame.Position.Y > -10) then return end
-                
+
                 local dir = (Vector3.new(portalPos.X, 0, portalPos.Z) - Vector3.new(closestPlayerRoot.CFrame.Position.X, 0, closestPlayerRoot.CFrame.Position.Z)).Unit
                 local tPos = closestPlayerRoot.CFrame.Position + Vector3.new(0, 3, 0) + closestPlayerRoot.CFrame.LookVector * -5 + closestPlayerRoot.AssemblyLinearVelocity * 0.2
                 local tCF = CFrame.new(tPos, tPos + dir)
