@@ -7,7 +7,7 @@ local player = Players.LocalPlayer
 
 local TPArenaPos = Vector3.new(0, 150, 0)
 local spawnCloudPosition = Vector3.new(500, 150, 500)
-local dragDistance = 250 -- How far the player is from the target
+local dragDistance = 300 -- How far the player is from the target
 
 local brazil = game:GetService("Workspace").Lobby.brazil
 local brazilPart = brazil.portal
@@ -89,10 +89,6 @@ local function tpBrazil()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
     humanoidRootPart.CFrame = CFrame.new(brazilPart.CFrame.Position + Vector3.new(0, 5, 0))
-end
-
-local function bringTarget(root)
-
 end
 
 local function attack(root)
@@ -371,6 +367,7 @@ for _, player in pairs(game.Players:GetPlayers()) do
 end
 local function onExit()
     active = false
+    cancelAttack = true
     resetConnection()
     for i, v in ipairs(connections) do
         v:Disconnect()
