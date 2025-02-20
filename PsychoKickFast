@@ -196,22 +196,28 @@ local function attack(root)
                 local offset = portalPos - closestPlayerRoot.CFrame.Position
                 local dir = offset.Magnitude > 0 and offset.Unit or Vector3.new(1, 0, 0)
 
-                local newPos = closestPlayerRoot.CFrame.Position + dir * math.min(dragDistance, distance)
+                local newPos = closestPlayerRoot.CFrame.Position + dir * distance
 
                 for _, v in ipairs(character:GetChildren()) do
                     if v:IsA("BasePart") then
-                        v.CFrame = CFrame.new(newPos, Vector3.new(portalPos.X, newPos.Y, portalPos.Z))
+                        v.CFrame = CFrame.new(distance > dragDistance and newPos or portalPos)
                         v.CanTouch = false
                         v.AssemblyLinearVelocity = Vector3.new(30, 30, 30)
                         v.AssemblyAngularVelocity = Vector3.new(30, 30, 30)
                     end
                 end
 
+                print(character.HumanoidRootPart.CFrame.Position, distance, dir, newPos)
+
                 task.wait()
             end
         end
     end
     bringTarget()
+    if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace and closestPlayerRoot.CFrame.Position.Y > -10) then
+        if camCon then camCon:Disconnect() end
+        return
+    end
 
     resetConnection()
 
