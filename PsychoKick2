@@ -7,7 +7,7 @@ local player = Players.LocalPlayer
 
 local TPArenaPos = Vector3.new(0, 150, 0)
 local spawnCloudPosition = Vector3.new(500, 150, 500)
-local dragDistance = 300 -- How far the player is from the target
+local dragDistance = 270 -- How far the player is from the target
 
 local brazil = game:GetService("Workspace").Lobby.brazil
 local brazilPart = brazil.portal
@@ -203,35 +203,23 @@ local function attack(root)
     resetConnection()
 
     connection = game:GetService("RunService").Heartbeat:Connect(function()
-        local tCF = CFrame.new(portalPos)
-
         for _, v in ipairs(character:GetChildren()) do
             if v:IsA("BasePart") then
-                v.CFrame = tCF
+                v.CFrame = originalCFrame
                 v.AssemblyLinearVelocity = Vector3.zero
                 v.AssemblyAngularVelocity = Vector3.zero
             end
         end
     end)
-
-    task.wait(0.5)
-    resetConnection()
-
-    humanoid:ChangeState(Enum.HumanoidStateType.Running)
-    task.wait()
-    for _, v in ipairs(character:GetChildren()) do
-        if v:IsA("BasePart") then
-            v.CFrame = originalCFrame
-        end
-    end
-    task.wait()
+    task.wait(0.2)
     for _, v in ipairs(character:GetChildren()) do
         if v:IsA("BasePart") then
             v.CanTouch = true
         end
     end
     humanoid:ChangeState(Enum.HumanoidStateType.Running)
-
+    task.wait()
+    resetConnection()
     if camCon then camCon:Disconnect() end
     workspace.CurrentCamera.CameraSubject = character:FindFirstChild("Head")
     attackTarget = nil
