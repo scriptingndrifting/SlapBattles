@@ -126,7 +126,7 @@ local function attack(root)
         workspace.CurrentCamera.CameraSubject = closestPlayerRoot.Parent:FindFirstChild("Head") or closestPlayerRoot
     end)
 
-    for _, v in ipairs(character:GetChildren()) do
+    for _, v in ipairs(game.Players.LocalPlayer.Character:GetChildren()) do
         if v:IsA("BasePart") then
             v.CanTouch = false
             v.AssemblyLinearVelocity = Vector3.zero
@@ -142,11 +142,12 @@ local function attack(root)
         local attackStart = tick()
         while ((closestPlayerRoot.CFrame.Position - portalPos).Magnitude > 10 or tick() - attackStart < 10) and not cancelAttack do
             -- Make sure of target
-            if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
+            if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace and closestPlayerRoot.CFrame.Position.Y > -10) then return end
 
             -- Attack the target
             connection = game:GetService("RunService").Heartbeat:Connect(function()
-                if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
+                if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace and closestPlayerRoot.CFrame.Position.Y > -10) then return end
+                
                 local dir = (Vector3.new(portalPos.X, 0, portalPos.Z) - Vector3.new(closestPlayerRoot.CFrame.Position.X, 0, closestPlayerRoot.CFrame.Position.Z)).Unit
                 local tPos = closestPlayerRoot.CFrame.Position + Vector3.new(0, 3, 0) + closestPlayerRoot.CFrame.LookVector * -5 + closestPlayerRoot.AssemblyLinearVelocity * 0.2
                 local tCF = CFrame.new(tPos, tPos + dir)
@@ -154,8 +155,8 @@ local function attack(root)
                 for _, v in ipairs(character:GetChildren()) do
                     if v:IsA("BasePart") then
                         v.CFrame = tCF
-                        v.AssemblyLinearVelocity = Vector3.zero
-                        v.AssemblyAngularVelocity = Vector3.zero
+                        v.AssemblyLinearVelocity = Vector3.new(30, 30, 30)
+                        v.AssemblyAngularVelocity = Vector3.new(30, 30, 30)
                     end
                 end
             end)
@@ -183,7 +184,7 @@ local function attack(root)
             local moveStart = tick()
             while (tick() - moveStart < 3.8) and not cancelAttack do
                 -- Make sure of target
-                if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
+                if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace and closestPlayerRoot.CFrame.Position.Y > -10) then return end
 
                 local distance = (portalPos - closestPlayerRoot.CFrame.Position).Magnitude
                 
@@ -194,8 +195,8 @@ local function attack(root)
                     if v:IsA("BasePart") then
                         v.CFrame = CFrame.new(newPos, Vector3.new(portalPos.X, newPos.Y, portalPos.Z))
                         v.CanTouch = false
-                        v.AssemblyLinearVelocity = Vector3.zero
-                        v.AssemblyAngularVelocity = Vector3.zero
+                        v.AssemblyLinearVelocity = Vector3.new(30, 30, 30)
+                        v.AssemblyAngularVelocity = Vector3.new(30, 30, 30)
                     end
                 end
 
