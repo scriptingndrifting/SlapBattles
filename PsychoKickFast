@@ -13,7 +13,7 @@ local brazil = game:GetService("Workspace").Lobby.brazil
 local brazilPart = brazil.portal
 local arenaPart = game:GetService("Workspace").Lobby.Teleport1
 
-local portalPos = brazilPart.CFrame.Position
+local portalPos = brazilPart.CFrame.Position + Vector3.new(0, 6, 0)
 
 for _, v in pairs(brazil:GetDescendants()) do
     if v:IsA("BasePart") then v.CanTouch = false end
