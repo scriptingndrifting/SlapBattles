@@ -1,0 +1,399 @@
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+
+local player = Players.LocalPlayer
+
+local TPArenaPos = Vector3.new(0, 150, 0)
+local spawnCloudPosition = Vector3.new(500, 150, 500)
+local speed = 115
+
+local brazil = game:GetService("Workspace").Lobby.brazil
+local brazilPart = brazil.portal
+local arenaPart = game:GetService("Workspace").Lobby.Teleport1
+
+local portalPos = brazilPart.CFrame.Position + Vector3.new(0, 4, 0)
+
+for _, v in pairs(brazil:GetDescendants()) do
+    if v:IsA("BasePart") then v.CanTouch = false end
+end
+
+local connection
+local camCon
+local camConDelay
+local con
+local connections = {}
+
+local cancelAttack = false
+local attackTarget
+
+local active = true
+
+local lastAbility = 0
+
+if not brazilPart then
+    return
+end
+
+local function resetConnection()
+    if connection then connection:Disconnect() end
+    connection = nil
+end
+
+local function getClosestPlayer()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+    local closestPlayer = nil
+    local shortestDistance = math.huge
+    
+    for _, otherPlayer in pairs(Players:GetPlayers()) do
+        if otherPlayer ~= player and otherPlayer.Character then
+            local otherRoot = otherPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if otherRoot then
+                local distance = (humanoidRootPart.Position - otherRoot.Position).Magnitude
+                if distance < shortestDistance then
+                    shortestDistance = distance
+                    closestPlayer = otherRoot
+                end
+            end
+        end
+    end
+    return closestPlayer
+end
+
+local function tpArena()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+    humanoidRootPart.CFrame = arenaPart.CFrame
+    task.wait()
+    resetConnection()
+    connection = game:GetService("RunService").Heartbeat:Connect(function()
+        if not humanoidRootPart then return end
+        humanoidRootPart.CFrame = CFrame.new(TPArenaPos, TPArenaPos + humanoidRootPart.CFrame.LookVector)
+        for _, v in pairs(character:GetChildren()) do
+            if v:IsA("BasePart") then v.CFrame = humanoidRootPart.CFrame end
+        end
+        humanoidRootPart.AssemblyLinearVelocity = Vector3.zero
+    end)
+    task.wait(0.5)
+    resetConnection()
+end
+
+local function tpBrazil()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+    humanoidRootPart.CFrame = CFrame.new(brazilPart.CFrame.Position + Vector3.new(0, 5, 0))
+end
+
+local function bringTarget(root)
+
+end
+
+local function attack(root)
+    if attackTarget then return end
+    local character = player.Character
+    local humanoid = character:WaitForChild("Humanoid")
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    local camera = workspace.CurrentCamera
+
+    if not character then return 2 end
+    
+    tool = character:FindFirstChildOfClass("Tool")
+    if not tool then
+        tool = player.Backpack:FindFirstChildOfClass("Tool")
+        if not tool then
+            tpArena()
+            tool = character:FindFirstChildOfClass("Tool")
+        end
+    end
+    if not tool or not (tool.Parent == character or tool.Parent == player.Backpack) then return end
+    tool.Parent = character
+    
+    local closestPlayerRoot = root
+    if not closestPlayerRoot then return end
+
+    attackTarget = closestPlayerRoot
+
+    local originalCFrame = humanoidRootPart.CFrame
+
+    if camCon then camCon:Disconnect(); camCon = nil end
+    if camConDelay then task.cancel(camConDelay); camConDelay = nil end
+    camCon = game:GetService("RunService").RenderStepped:Connect(function()
+        workspace.CurrentCamera.CameraSubject = closestPlayerRoot.Parent:FindFirstChild("Head") or closestPlayerRoot
+    end)
+
+    for _, v in ipairs(character:GetChildren()) do
+        if v:IsA("BasePart") then
+            v.CanTouch = false
+            v.AssemblyLinearVelocity = Vector3.zero
+            v.AssemblyAngularVelocity = Vector3.zero
+        end
+    end
+
+    resetConnection()
+
+    cancelAttack = false
+
+    local function bringTarget()
+        local attackStart = tick()
+        while ((closestPlayerRoot.CFrame.Position - portalPos).Magnitude > 5 or tick() - attackStart > 10) and not cancelAttack do
+            -- Attack the target
+            connection = game:GetService("RunService").Heartbeat:Connect(function()
+                if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then return end
+                local dir = CFrame.new(closestPlayerRoot.CFrame.Position, Vector3.new(brazilPart.CFrame.Position.X, closestPlayerRoot.CFrame.Position.Y, brazilPart.CFrame.Position.Z)).LookVector
+                local tPos = closestPlayerRoot.CFrame.Position + Vector3.new(0, 4, 0) + closestPlayerRoot.AssemblyLinearVelocity * 0.3
+                local tCF = CFrame.new(tPos, tPos + dir)
+        
+                for _, v in ipairs(character:GetChildren()) do
+                    if v:IsA("BasePart") then
+                        v.CFrame = tCF
+                        v.AssemblyLinearVelocity = Vector3.zero
+                        v.AssemblyAngularVelocity = Vector3.zero
+                    end
+                end
+            end)
+
+            if not (closestPlayerRoot and closestPlayerRoot.Parent.Parent == workspace) then break end
+
+            task.wait(0.2)
+
+            local args = {
+                [1] = closestPlayerRoot
+            }
+
+            game:GetService("ReplicatedStorage").GeneralHit:FireServer(unpack(args))
+
+            task.wait(0.2)
+
+            local args = {
+                [1] = {
+                    ["grabEnabled"] = true
+                }
+            }
+            game:GetService("ReplicatedStorage").Psychokinesis:InvokeServer(unpack(args))
+
+            resetConnection()
+
+            -- Move towards portal at speed studs per second
+            local moveStart = tick()
+            while (tick() - moveStart < 3.8) and not cancelAttack do
+                if (humanoidRootPart.CFrame.Position - portalPos).Magnitude < 20 then
+                    for _, v in ipairs(character:GetChildren()) do
+                        if v:IsA("BasePart") then
+                            v.CFrame = CFrame.new(portalPos)
+                            v.AssemblyLinearVelocity = Vector3.zero
+                            v.AssemblyAngularVelocity = Vector3.zero
+                        end
+                    end
+                    task.wait()
+                else
+                    local distance = (humanoidRootPart.Position - portalPos).Magnitude
+                    if distance < 5 then break end -- Stop moving if close
+
+                    local direction = (portalPos - humanoidRootPart.Position).Unit
+                    local moveStep = direction * speed * task.wait()
+
+                    for _, v in ipairs(character:GetChildren()) do
+                        if v:IsA("BasePart") then
+                            v.CFrame = v.CFrame + moveStep
+                            v.AssemblyLinearVelocity = Vector3.zero
+                            v.AssemblyAngularVelocity = Vector3.zero
+                        end
+                    end
+                end
+            end
+        end
+    end
+    bringTarget()
+
+    resetConnection()
+
+    connection = game:GetService("RunService").Heartbeat:Connect(function()
+        local tCF = CFrame.new(portalPos)
+
+        for _, v in ipairs(character:GetChildren()) do
+            if v:IsA("BasePart") then
+                v.CFrame = tCF
+                v.AssemblyLinearVelocity = Vector3.zero
+                v.AssemblyAngularVelocity = Vector3.zero
+            end
+        end
+    end)
+
+    task.wait(0.5)
+    resetConnection()
+
+    humanoid:ChangeState(Enum.HumanoidStateType.Running)
+    task.wait()
+    for _, v in ipairs(character:GetChildren()) do
+        if v:IsA("BasePart") then
+            v.CFrame = originalCFrame
+        end
+    end
+    task.wait()
+    for _, v in ipairs(character:GetChildren()) do
+        if v:IsA("BasePart") then
+            v.CanTouch = true
+        end
+    end
+    humanoid:ChangeState(Enum.HumanoidStateType.Running)
+
+    if camCon then camCon:Disconnect() end
+    workspace.CurrentCamera.CameraSubject = character:FindFirstChild("Head")
+    attackTarget = nil
+end
+
+-- Player Selector Script
+
+local localplayer = Players.LocalPlayer
+local screenGui = Instance.new("ScreenGui")
+screenGui.ResetOnSpawn = false
+screenGui.Parent = game:GetService("CoreGui")
+
+local tpArenaButton = Instance.new("TextButton", screenGui)
+tpArenaButton.AnchorPoint = Vector2.new(1, 0)
+tpArenaButton.Size = UDim2.new(0, 100, 0, 25)
+tpArenaButton.Position = UDim2.new(1, -200, 0, 0)
+tpArenaButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+tpArenaButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+tpArenaButton.Text = "TP Arena"
+con = tpArenaButton.Activated:Connect(tpArena)
+table.insert(connections, con)
+
+local tpBrazilButton = Instance.new("TextButton", screenGui)
+tpBrazilButton.AnchorPoint = Vector2.new(1, 0)
+tpBrazilButton.Size = UDim2.new(0, 100, 0, 25)
+tpBrazilButton.Position = UDim2.new(1, -200, 0, 25)
+tpBrazilButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+tpBrazilButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+tpBrazilButton.Text = "TP Brazil"
+con = tpBrazilButton.Activated:Connect(tpBrazil)
+table.insert(connections, con)
+
+local frame = Instance.new("ScrollingFrame")
+frame.Size = UDim2.new(0, 200, 0.7, 0)
+frame.AnchorPoint = Vector2.new(1, 0)
+frame.Position = UDim2.new(1, 0, 0, 0)
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.Parent = screenGui
+local listUI = Instance.new("UIListLayout", frame)
+local playerButtons = {}
+local function createPlayerButton(playerName)
+    local button = Instance.new("TextButton", frame)
+    button.Size = UDim2.new(0.5, 0, 0, 25)
+    button.Text = playerName
+    button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    
+    local lastClick = 0
+
+    button.MouseButton1Click:Connect(function()
+        local currentTime = tick()  -- Get current time in seconds
+        if (not attackTarget) and currentTime - lastClick < 0.3 then
+            -- Double click detected (Attack)
+            local targetPlayer = game:GetService("Players"):FindFirstChild(playerName)
+            if not targetPlayer then return end
+            local targetPlayerRoot = targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if targetPlayerRoot then
+                attack(targetPlayerRoot)
+                --if camCon then camCon:Disconnect() end
+                --if camConDelay then task.cancel(camConDelay) end
+                --workspace.CurrentCamera.CameraSubject = localplayer.Character:FindFirstChild("Head")
+            end
+        else
+            -- Single click detected (View Player)
+            local targetPlayer = game:GetService("Players"):FindFirstChild(playerName)
+            if not targetPlayer then return end
+            local targetPlayerRoot = targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+            if targetPlayerRoot then
+                if camCon then camCon:Disconnect(); camCon = nil end
+                if camConDelay then task.cancel(camConDelay); camConDelay = nil end
+                camCon = game:GetService("RunService").RenderStepped:Connect(function()
+                    workspace.CurrentCamera.CameraSubject = targetPlayer.Character:FindFirstChild("Head") or targetPlayerRoot
+                end)
+                camConDelay = task.delay(1.5, function()
+                    camCon:Disconnect()
+                    workspace.CurrentCamera.CameraSubject = localplayer.Character:FindFirstChild("Head")
+                end)
+            end
+        end
+        lastClick = currentTime  -- Update last click time
+    end)
+
+    local tpButton = Instance.new("TextButton", button)
+    tpButton.Size = UDim2.new(1, 0, 1, 0)
+    tpButton.Position = UDim2.new(1, 0, 0, 0)
+    tpButton.Text = "(TP)"
+    tpButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    tpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+    tpButton.MouseButton1Click:Connect(function()
+        local targetPlayer = game:GetService("Players"):FindFirstChild(playerName)
+        if not targetPlayer then return end
+        local targetPlayerRoot = targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if targetPlayerRoot then
+            local character = player.Character or player.CharacterAdded:Wait()
+            local humanoid = character:WaitForChild("Humanoid")
+            local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+            resetConnection()
+            connection = game:GetService("RunService").Heartbeat:Connect(function()
+                humanoidRootPart.CFrame = targetPlayerRoot.CFrame
+                humanoidRootPart.AssemblyLinearVelocity = Vector3.zero
+            end)
+            task.wait(0.2)
+            resetConnection()
+        end
+    end)
+
+    playerButtons[playerName] = button
+end
+local function removePlayerButton(playerName)
+    local button = playerButtons[playerName]
+    if button then
+        button:Destroy()
+        playerButtons[playerName] = nil
+    end
+end
+con = game.Players.PlayerAdded:Connect(function(p)
+    if p ~= localplayer then
+        createPlayerButton(p.Name)
+    end
+end)
+table.insert(connections, con)
+con = game.Players.PlayerRemoving:Connect(function(p)
+    if p ~= localplayer then
+        removePlayerButton(p.Name)
+    end
+end)
+table.insert(connections, con)
+for _, player in pairs(game.Players:GetPlayers()) do
+    if player ~= localplayer then
+        createPlayerButton(player.Name)
+    end
+end
+local function onExit()
+    active = false
+    resetConnection()
+    for i, v in ipairs(connections) do
+        v:Disconnect()
+    end
+    screenGui:Destroy()
+end
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not active then return end
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.H then
+        active = false
+        onExit()
+        return
+    end
+    if input.KeyCode == Enum.KeyCode.G then
+        cancelAttack = true
+    end
+end)
