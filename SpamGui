@@ -49,7 +49,7 @@ end
 -- TELEPORTS
 
 function enterArena()
-    local exist, chr, hrp, hum = getChar()
+    local exist, chr, hrp, hum = getChr()
     if not exist then return end
 
     hrp.CanTouch = true
@@ -59,7 +59,7 @@ function enterArena()
 end
 
 function tpArena()
-    local exist, chr, hrp, hum = getChar()
+    local exist, chr, hrp, hum = getChr()
     if not exist then return end
 
     posConnection = game:GetService("RunService").Heartbeat:Connect(function()
@@ -74,7 +74,7 @@ function tpArena()
 end
 
 function tpLobby()
-    local exist, chr, hrp, hum = getChar()
+    local exist, chr, hrp, hum = getChr()
     if not exist then return end
 
     local spawnLocation = lobby.SpawnLocation
@@ -93,7 +93,7 @@ function tpLobby()
 end
 
 function tpBrazil()
-    local exist, chr, hrp, hum = getChar()
+    local exist, chr, hrp, hum = getChr()
     if not exist then return end
 
     posConnection = game:GetService("RunService").Heartbeat:Connect(function()
@@ -110,7 +110,7 @@ end
 -- FUNCS
 
 function isInArena()
-    local exist, chr, hrp, hum = getChar()
+    local exist, chr, hrp, hum = getChr()
     if not exist then return false end
 
     local isInArenaValue = chr:FindFirstChild("isInArena")
@@ -120,7 +120,7 @@ function isInArena()
 end
 
 function equipGlove(glove)
-    local exist, chr, hrp, hum = getChar()
+    local exist, chr, hrp, hum = getChr()
     if not exist then return end
 
     if isInArena() then return end
