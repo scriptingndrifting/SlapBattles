@@ -1,0 +1,160 @@
+-- SB GUI
+
+if game.PlaceId ~= 6403373529 then
+    warn("This is a Slap Battles script! Exiting.")
+    return
+end
+
+local workspace = game:GetService("Workspace")
+local lobby = workspace.Lobby
+local gloveStands = Lobby.GloveStands
+local regularPortal = Lobby.Teleport1
+local brazil = Lobby.brazil
+local brazilPortal = brazil.portal
+
+for _, v in pairs(brazil:GetDescendants()) do
+    if v:IsA("BasePart") then v.CanTouch = false end
+end
+game:GetService("Workspace").DEATHBARRIER.CanTouch = false
+game:GetService("Workspace").DEATHBARRIER2.CanTouch = false
+game:GetService("Workspace").dedBarrier.CanTouch = false
+
+local TPArenaPos = Vector3.new(0, 150, 0)
+local TPBrazilPos = brazilPortal.CFrame.Position + Vector3.new(0, 5, 0)
+
+local connections = {}
+local posConnection = nil
+
+function connect(event, func)
+    table.insert(connections, event:Connect(func))
+end
+
+function getChr()
+	local chr = player.Character
+	if chr then
+		local hrp = chr:FindFirstChild("HumanoidRootPart")
+		local hum = chr:FindFirstChild("Humanoid")
+		return hrp and hum, chr, hrp, hum
+	end
+	return false
+end
+
+function resetConnection()
+    if posConnection then
+        posConnection:Disconnect()
+        posConnection = nil
+    end
+end
+
+-- TELEPORTS
+
+function enterArena()
+    local exist, chr, hrp, hum = getChar()
+    if not exist then return end
+
+    hrp.CanTouch = true
+    hrp.CFrame = regularPortal.CFrame
+    task.wait()
+    hrp.CanTouch = false
+end
+
+function tpArena()
+    local exist, chr, hrp, hum = getChar()
+    if not exist then return end
+
+    posConnection = game:GetService("RunService").Heartbeat:Connect(function()
+        hrp.CFrame = CFrame.new(TPArenaPos, TPArenaPos + hrp.CFrame.LookVector)
+        for _, v in pairs(character:GetChildren()) do
+            if v:IsA("BasePart") then v.CFrame = hrp.CFrame end
+        end
+        hrp.AssemblyLinearVelocity = Vector3.zero
+    end)
+    task.wait(0.2)
+    resetConnection()
+end
+
+function tpLobby()
+    local exist, chr, hrp, hum = getChar()
+    if not exist then return end
+
+    local spawnLocation = lobby.SpawnLocation
+
+    posConnection = game:GetService("RunService").Heartbeat:Connect(function()
+        hrp.CFrame = CFrame.new(spawnLocation.CFrame, spawnLocation.CFrame + hrp.CFrame.LookVector)
+        for _, v in pairs(character:GetChildren()) do
+            if v:IsA("BasePart") then v.CFrame = hrp.CFrame end
+        end
+        hrp.AssemblyLinearVelocity = Vector3.zero
+    end)
+    task.wait(0.2)
+    resetConnection()
+
+    -- hum:ChangeState(Enum.HumanoidStateType.Running)
+end
+
+function tpBrazil()
+    local exist, chr, hrp, hum = getChar()
+    if not exist then return end
+
+    posConnection = game:GetService("RunService").Heartbeat:Connect(function()
+        hrp.CFrame = CFrame.new(TPBrazilPos, TPBrazilPos + hrp.CFrame.LookVector)
+        for _, v in pairs(character:GetChildren()) do
+            if v:IsA("BasePart") then v.CFrame = hrp.CFrame end
+        end
+        hrp.AssemblyLinearVelocity = Vector3.zero
+    end)
+    task.wait(0.2)
+    resetConnection()
+end
+
+-- FUNCS
+
+function isInArena()
+    local exist, chr, hrp, hum = getChar()
+    if not exist then return false end
+
+    local isInArenaValue = chr:FindFirstChild("isInArena")
+    if not isInArenaValue then return false end
+
+    return isInArenaValue.Value
+end
+
+function equipGlove(glove)
+    local exist, chr, hrp, hum = getChar()
+    if not exist then return end
+
+    if isInArena() then return end
+
+    if gloveStands:FindFirstChild(glove) and lobby:FindFirstChild(glove) then
+        local clickDetector = lobby:FindFirstChild(glove):FindFirstChildOfClass("ClickDetector")
+        fireclickdetector(clickDetector)
+    end
+end
+
+-- GUI
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.ResetOnSpawn = false
+screenGui.Parent = game:GetService("CoreGui")
+
+function createButton(text, position, callback)
+    local button = Instance.new("TextButton", screenGui)
+    button.AnchorPoint = Vector2.new(1, 0)
+    button.Size = UDim2.new(0, 100, 0, 25)
+    button.Position = position
+    button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.Text = text
+    connect(button.Activated, callback)  -- Connect and store in one line
+    return button
+end
+
+createButton("TP Arena", UDim2.new(1, -200, 0, 0), tpArena)
+createButton("TP Lobby", UDim2.new(1, -200, 0, 25), tpLobby)
+createButton("TP Brazil", UDim2.new(1, -200, 0, 50), tpBrazil)
+
+-- Others
+
+createButton("Equip Slicer", UDim2.new(1, -200, 0, 100), function()
+    equipGlove("Slicer")
+end)
