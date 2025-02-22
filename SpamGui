@@ -157,13 +157,13 @@ function createButton(text, position, callback)
     return button
 end
 
-createButton("TP Arena", UDim2.new(1, -200, 0, 0), tpArena)
-createButton("TP Lobby", UDim2.new(1, -200, 0, 25), tpLobby)
-createButton("TP Brazil", UDim2.new(1, -200, 0, 50), tpBrazil)
+createButton("TP Arena", UDim2.new(1, 0, 0, 0), tpArena)
+createButton("TP Lobby", UDim2.new(1, 0, 0, 25), tpLobby)
+createButton("TP Brazil", UDim2.new(1, 0, 0, 50), tpBrazil)
 
 -- Others
 
-createButton("Equip Slicer", UDim2.new(1, -200, 0, 100), function()
+createButton("Equip Slicer", UDim2.new(1, 0, 0, 100), function()
     equipGlove("Slicer")
 end)
 
