@@ -7,9 +7,9 @@ end
 
 local workspace = game:GetService("Workspace")
 local lobby = workspace.Lobby
-local gloveStands = Lobby.GloveStands
-local regularPortal = Lobby.Teleport1
-local brazil = Lobby.brazil
+local gloveStands = lobby.GloveStands
+local regularPortal = lobby.Teleport1
+local brazil = lobby.brazil
 local brazilPortal = brazil.portal
 
 for _, v in pairs(brazil:GetDescendants()) do
