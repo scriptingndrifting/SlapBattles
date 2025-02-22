@@ -5,6 +5,12 @@ if game.PlaceId ~= 6403373529 then
     return
 end
 
+local players = game:GetService("Players")
+local rep = game:GetService("ReplicatedStorage")
+local UIS = game:GetService("UserInputService")
+
+local plr = players.LocalPlayer
+
 local active = true
 
 local workspace = game:GetService("Workspace")
@@ -32,7 +38,7 @@ function connect(event, func)
 end
 
 function getChr()
-	local chr = player.Character
+	local chr = plr.Character
 	if chr then
 		local hrp = chr:FindFirstChild("HumanoidRootPart")
 		local hum = chr:FindFirstChild("Humanoid")
@@ -165,14 +171,15 @@ end)
 
 function onExit()
     active = false
-    cancelAttack = true
+
     resetConnection()
     for i, v in ipairs(connections) do
         v:Disconnect()
     end
     screenGui:Destroy()
 end
-game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+
+UIS.InputBegan:Connect(function(input, gameProcessed)
     if not active then return end
     if gameProcessed then return end
     if input.KeyCode == Enum.KeyCode.H then
@@ -181,6 +188,6 @@ game:GetService("UserInputService").InputBegan:Connect(function(input, gameProce
         return
     end
     if input.KeyCode == Enum.KeyCode.G then
-        cancelAttack = true
+        
     end
 end)
