@@ -158,3 +158,27 @@ createButton("TP Brazil", UDim2.new(1, -200, 0, 50), tpBrazil)
 createButton("Equip Slicer", UDim2.new(1, -200, 0, 100), function()
     equipGlove("Slicer")
 end)
+
+-- Exit
+
+function onExit()
+    active = false
+    cancelAttack = true
+    resetConnection()
+    for i, v in ipairs(connections) do
+        v:Disconnect()
+    end
+    screenGui:Destroy()
+end
+game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+    if not active then return end
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.H then
+        active = false
+        onExit()
+        return
+    end
+    if input.KeyCode == Enum.KeyCode.G then
+        cancelAttack = true
+    end
+end)
