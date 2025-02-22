@@ -88,7 +88,7 @@ function tpLobby()
     local spawnLocation = lobby.SpawnLocation
 
     posConnection = game:GetService("RunService").Heartbeat:Connect(function()
-        hrp.CFrame = CFrame.new(spawnLocation.CFrame, spawnLocation.CFrame + hrp.CFrame.LookVector)
+        hrp.CFrame = CFrame.new(spawnLocation.CFrame.Position, spawnLocation.CFrame.Position + hrp.CFrame.LookVector)
         for _, v in pairs(character:GetChildren()) do
             if v:IsA("BasePart") then v.CFrame = hrp.CFrame end
         end
